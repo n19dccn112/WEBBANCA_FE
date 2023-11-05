@@ -24,6 +24,7 @@ class ProductList extends Component {
               this.setState({
                 products: res.data
               });
+            // console.log('products', res.data)
             // console.log("Object.keys(res.data).length: ", Math.round(Object.keys(res.data).length/20 + 1))
             if (this.props.handlePageNumber !== undefined)
             this.props.handlePageNumber(Math.round(Object.keys(res.data).length/20 + 1))
@@ -94,7 +95,8 @@ componentDidUpdate(prevProps)
     return (
         listProducts.map((product, index) => {
           // console.log("product.minPrice, product.maxPrice: ", product.minPrice, product.maxPrice)
-          if ((this.props.isTable && index < this.props.maxNumber && index > this.props.minNumber) ||
+          if ((this.props.isTable &&
+                  index < this.props.maxNumber && index >= this.props.minNumber) ||
               (!this.props.isTable &&
                 ((this.props.minPriceFilter <= product.maxPrice && product.maxPrice <= this.props.maxPriceFilter) ||
                   (this.props.minPriceFilter <= product.minPrice && product.minPrice <= this.props.maxPriceFilter)))) {

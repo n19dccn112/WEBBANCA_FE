@@ -14,105 +14,81 @@ class Product extends Component {
     }
   }
   orderDetails() {
-    if (Object.keys(this.state.products).length === 0){
-      get('orderDetails', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-              }
-              console.log("orderDetails: ", this.props.productId, res.data, Object.keys(this.state.products).length
-                  , Object.keys(res.data).length)
+    get('orderDetails', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
             }
-          })
-    }
+          }
+        })
   }
   unitDetail() {
-    if (Object.keys(this.state.products).length === 0){
-      get('unitDetail', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-              }
-              // console.log("unitDetail: ", this.props.productId, res.data, Object.keys(this.state.products).length
-              //     , Object.keys(res.data).length)
-              this.orderDetails()
+    get('unitDetail', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
             }
-          })
-    }
+            if (Object.keys(res.data).length === 0) this.orderDetails()
+          }
+        })
   }
   imagesDetail() {
-    if (Object.keys(this.state.products).length === 0){
-      get('imagesDetail', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-              }
-              // console.log("imagesDetail: ", this.props.productId, res.data, Object.keys(this.state.products).length
-              //     , Object.keys(res.data).length)
-              this.unitDetail()
+    get('imagesDetail', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
             }
-          })
-    }
+            if (Object.keys(res.data).length === 0) this.unitDetail()
+          }
+        })
   }
   eventProducts() {
-    if (Object.keys(this.state.products).length === 0){
-      get('eventProducts', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-              }
-              // console.log("eventProducts: ", this.props.productId, res.data, Object.keys(this.state.products).length
-              //     , Object.keys(res.data).length)
-              this.imagesDetail()
+    get('eventProducts', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
+              if (Object.keys(res.data).length === 0)   this.imagesDetail()
             }
-          })
-    }
+          }
+        })
   }
   categoryDetail() {
-    if (Object.keys(this.state.products).length === 0){
-      get('categoryDetail', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-              }
-              // console.log("categoryDetail: ", this.props.productId, res.data, Object.keys(this.state.products).length
-              //     , Object.keys(res.data).length)
-              this.eventProducts()
+    get('categoryDetail', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
             }
-          })
-    }
+            if (Object.keys(res.data).length === 0) this.eventProducts()
+          }
+        })
   }
   businessDetail(){
-    if (Object.keys(this.state.products).length === 0){
-      get('businessDetail', {"productId": this.props.productId})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  products: res.data
-                });
-                // console.log("businessDetail: ", this.props.productId, res.data, Object.keys(this.state.products).length
-                //     , Object.keys(res.data).length)
-                this.categoryDetail()
-              }
+    get('businessDetail', {"productId": this.props.productId})
+        .then(res => {
+          if (res !== undefined) {
+            if (res.status === 200) {
+              this.setState({
+                products: res.data
+              });
+              if (Object.keys(res.data).length === 0) this.categoryDetail()
             }
-          })
-    }
+          }
+        })
   }
   userProducts(){
     get('userProducts', {"productId": this.props.productId})
@@ -122,33 +98,13 @@ class Product extends Component {
               this.setState({
                 products: res.data
               });
-              // console.log("userProducts: ", this.props.productId, res.data, Object.keys(this.state.products).length
-              //     , Object.keys(res.data).length)
-              this.businessDetail()
+              if (Object.keys(res.data).length === 0)   this.businessDetail()
             }
           }
         })
   }
   componentDidMount() {
-    // get('events', {"productId": this.props.id})
-    //     .then(res => {
-    //       if (res !== undefined)
-    //         if (res.status === 200) {
-    //           var event = []
-    //           res.data.map((value, key) => {
-    //             if (value.isShow.trim() === "true"){
-    //               if (key === 0){
-    //                 event = value;
-    //               }
-    //               event = value.discountValue > event.discountValue ? value : event;
-    //             }
-    //           })
-    //           this.setState({
-    //             event: event,
-    //           });
-    //         }
-    //     });
-    this.userProducts()
+    setTimeout(() => this.userProducts(), 500)
   }
   handleDate(dateStr){
     const date = new Date(dateStr);

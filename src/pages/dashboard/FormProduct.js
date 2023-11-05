@@ -36,7 +36,7 @@ class FormProduct extends Component {
       lengths: {},
       productPrices: {},
       // unitUnitPrices: {},
-      // unitDetailAmounts: {},
+      unitDetailAmount: {},
 
       dictUnitDetails: {},
       imagesDetails: [],
@@ -70,7 +70,6 @@ class FormProduct extends Component {
       speedGrowthsOk: {},
       lengthsOk: {},
     }
-    this.statusFishName = ["Sống", "Phát triển", "Không sống", "Khỏe", "Bệnh"]
   }
   hasId(){
     if (this.props.match.params.id) {
@@ -79,7 +78,7 @@ class FormProduct extends Component {
           .then(res => {
             if (res !== undefined)
               if (res.status === 200) {
-                let checkIsAnimal = res.data.isAnimal === 'true' ? true : false;
+                let checkIsAnimal = res.data.isAnimal === 'true';
                 let date = res.data.isAnimal === 'true' ? res.data.importDate : res.data.expirationDate
                 this.setState({
                   product: res.data,
@@ -494,7 +493,6 @@ class FormProduct extends Component {
                                                                   })
                                                         }
                                                       })
-                                                      console.log("this.statusFishName: ", this.statusFishName, this.state.statusFishDetails)
                                                       this.statusFishName.map((value, index) => {
                                                         let statusFishDetails = this.state.statusFishDetails
                                                         console.log("statusFishDetails[[unitId, productId, index]], unitId, productId, index: ",
@@ -872,7 +870,6 @@ class FormProduct extends Component {
       }
     }
     if (this.state.id) {
-      // console.log("vào if id")
       await get('unitDetail', {"productId": this.state.id, "unitId": id})
           .then(res => {
             if (res !== undefined) {
@@ -889,14 +886,14 @@ class FormProduct extends Component {
                 let lengths = {}
                 let productPrices = {}
                 // let unitUnitPrices = {}
-                // let unitDetailAmounts = {}
+                let unitDetailAmount = {}
                 res.data.map((value, index) => {
                   oK[value.unitId] = true
                   speedGrowths[value.unitId] = value.speedGrowth
                   lengths[value.unitId] = value.length
                   productPrices[value.unitId] = value.productPrice
                   // unitUnitPrices[value.unitId] = 'vnd'
-                  // unitDetailAmounts[value.unitId] = value.unitDetailAmount
+                  unitDetailAmount[value.unitId] = value.unitDetailAmount
                 })
                 this.setState({
                   unitDetails: unitDetails,
@@ -906,7 +903,7 @@ class FormProduct extends Component {
                   lengths: lengths,
                   productPrices: productPrices,
                   // unitUnitPrices: unitUnitPrices,
-                  // unitDetailAmounts: unitDetailAmounts,
+                  unitDetailAmount: unitDetailAmount,
 
                   speedGrowthsOk: oK,
                   lengthsOk: oK,
@@ -919,40 +916,7 @@ class FormProduct extends Component {
             }
           })
      }
-      // console.log("this.state.dictUnitDetails hết hàm: ", id, this.state.dictUnitDetails, this.state.dictUnitDetails[id])
   }
-  handleCheckStatusFish(e, unitId, productId, index){
-    let statusFishDetails = this.state.statusFishDetails;
-    let statusFishDetailsOk = this.state.statusFishDetailsOk;
-
-    console.log("statusFishDetails: trước ", statusFishDetails, unitId, productId, index, statusFishDetails[[unitId, productId, index]])
-    if (statusFishDetails[[unitId, productId, index]] !== undefined &&
-        statusFishDetails[[unitId, productId, index]] === true){
-      statusFishDetails[[unitId, productId, index]] = false
-      statusFishDetailsOk[unitId] = false
-    }else {
-      statusFishDetails[[unitId, productId, index]] = true
-      statusFishDetailsOk[unitId] = true
-    }
-    this.setState({
-      statusFishDetails: statusFishDetails,
-      statusFishDetailsOk: statusFishDetailsOk
-    })
-    console.log("statusFishDetails: sau ", statusFishDetails)
-  }
-  // amountOnChange(e, unitId){
-  //   if (e.target.value >= 0) {
-  //     let unitDetailAmounts = this.state.unitDetailAmounts
-  //     unitDetailAmounts[unitId] = e.target.value
-  //
-  //     let unitDetailAmountsOk = this.state.unitDetailAmountsOk
-  //     unitDetailAmountsOk[unitId] = true
-  //     this.setState({
-  //       unitDetailAmounts: unitDetailAmounts,
-  //       unitDetailAmountsOk: unitDetailAmountsOk
-  //     })
-  //   }
-  // }
   speedGrowthOnChange(e, unitId){
     console.log(e.target.value, unitId)
     if (e.target.value >= 0) {
@@ -997,8 +961,6 @@ class FormProduct extends Component {
   }
   filterByCateType(e){
     e.preventDefault()
-  }
-  unitPriceOnChange(e) {
   }
   render() {
     return (
@@ -1138,72 +1100,27 @@ class FormProduct extends Component {
                             <label key={value.unitId} className="checkbox-container">
                               <input id={`checkBoxUnit${value.unitId}`} type="checkbox"
                                   checked={this.state.unitsSelectId.includes(value.unitId)}
-                                  onChange={(e) => this.handleCheckUnit(e, value,  value.unitId)}/>
+                                  onChange={(e) =>
+                                      this.handleCheckUnit(e, value,  value.unitId)}/>
                               {value.unitName}</label>
                             {this.state.unitsSelectId.includes(value.unitId) &&
                               <div style={{marginLeft: "20px"}}>
                                 <div className="row">
-                                  <div className="col-sm-8">
+                                  <div className="col-sm-12">
                                     <div className="mb-3">
                                       <label className="form-label" htmlFor="price">
                                         Giá <span style={{color: "red"}}>
                                         {(!this.state.canSave && !this.state.priceOk[value.unitId]) ? '*' : ''}</span>
                                       </label>
-                                      {/*{console.log("giá: ", this.state.dictUnitDetails)}*/}
                                       <input className="form-control" name="price" id="price"
                                              value={(this.state.id !== 0 && this.state.dictUnitDetails[value.unitId]
                                                  && this.state.productPrices[value.unitId] === undefined) ?
                                                  this.state.dictUnitDetails[value.unitId].productPrice:
                                                  this.state.productPrices[value.unitId] ? this.state.productPrices[value.unitId] : ""}
-                                             type="number" onChange={(e) => this.priceOnChange(e, value.unitId)} />
+                                             type="number" onChange={(e) =>
+                                          this.priceOnChange(e, value.unitId)} />
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
-                                    <div className="mb-4">
-                                      <label className="form-label" htmlFor="unitprice">Đơn vị giá</label>
-                                      <select className="form-control" name="unitprice" id="unitprice"
-                                              onChange={(e) => this.unitPriceOnChange(e)}>
-                                        <option value="vnđ">vnđ</option>
-                                      </select>
-                                    </div>
-                                  </div>
-                                {/*  <div className="col-sm-6">*/}
-                                {/*    <div className="mb-4">*/}
-                                {/*      /!*{console.log("unitDetailAmountsOk: ", this.state.unitDetailAmountsOk, !this.state.canSave && !this.state.unitDetailAmountsOk[value.unitId],*!/*/}
-                                {/*      /!*    this.state.canSave, this.state.unitDetailAmountsOk[value.unitId])}*!/*/}
-                                {/*      <label className="form-label" htmlFor="amount">*/}
-                                {/*        Số lượng <span style={{color: "red"}}>*/}
-                                {/*        {(!this.state.canSave && !this.state.unitDetailAmountsOk[value.unitId]) ? '*' : ''}</span>*/}
-                                {/*      </label>*/}
-                                {/*      <input className="form-control" name="amount" id="amount"*/}
-                                {/*             value={(this.state.id !== 0 && this.state.dictUnitDetails[value.unitId] &&*/}
-                                {/*                 this.state.dictUnitDetails[value.unitId].unitDetailAmount)*/}
-                                {/*                 ? this.state.dictUnitDetails[value.unitId].unitDetailAmount :*/}
-                                {/*                 this.state.unitDetailAmounts[value.unitId] ? this.state.unitDetailAmounts[value.unitId]: ''}*/}
-                                {/*             onChange={(e) => this.amountOnChange(e, value.unitId)} type="number"/>*/}
-                                {/*    </div>*/}
-                                {/*  </div>*/}
-                                </div>
-                                <div className="row">
-                                  <label className="form-label">
-                                    Trạng thái cá <span style={{color: "red"}}>
-                                        {(!this.state.canSave && !this.state.statusFishDetailsOk[value.unitId]) ? '*' : ''}</span>
-                                  </label>
-                                  {this.statusFishName.map((valueFish, indexFish) => (
-                                  <div className="col-sm-4 ">
-                                    <div className="mb-1 me-3">
-                                      <div className="container1" style={{marginLeft: "20px"}}>
-                                        <label key={`labelStatus${valueFish}`} className="checkbox-container">
-                                          <input id={`checkBoxStatus${valueFish}`} type="checkbox"
-                                                 checked={this.state.statusFishDetails[[value.unitId, this.state.id, indexFish+1]] ?
-                                                     this.state.statusFishDetails[[value.unitId, this.state.id, indexFish+1]] : false}
-                                                 onChange={(e) =>
-                                                     this.handleCheckStatusFish(e, value.unitId, this.state.id, indexFish+1)}/>
-                                          {valueFish}
-                                        </label>
-                                      </div>
-                                    </div>
-                                  </div>))}
                                 </div>
                                 <div className="row">
                                   <div className="col-sm-6">
@@ -1242,18 +1159,15 @@ class FormProduct extends Component {
                                   Tính năng <span style={{color: "red"}}>
                                         {(!this.state.canSave && !this.state.featureDetailsOk[value.unitId]) ? '*' : ''}</span>
                                 </label>
-                                {this.state.featureTypes.map((valueft, indexft) => (
+                                {Object.values(this.state.featureTypes).length !==0 &&
+                                    this.state.featureTypes.map((valueft, indexft) => (
                                     <div className="row">
-                                      <div className="col-sm-3">
-                                        <div className="mb-2" style={{marginLeft: "40px", color: "slategray"}}>
-                                          {valueft.featureTypeName}</div>
+                                      <div className="mb-2 mt-2" style={{marginLeft: "40px", color: "slategray"}}>
+                                          {valueft.featureTypeName}
                                       </div>
                                         {this.state.featureTypesFeature[valueft.featureTypeId].map((valuef, indexf) =>(
-
-                                      <div className="col-sm-3">
-                                        <div className="mb-3">
-                                          {/*{console.log("this.state.featureDetails: ", this.state.featureDetails,*/}
-                                          {/*    this.state.featureDetails[[value.unitId, this.state.id, valuef.featureId]], value.unitId, this.state.id)}*/}
+                                      <div className="col-sm-12">
+                                        <div className="mb-0" style={{marginLeft: "40px"}}>
                                           <label key={valuef.specific} className="checkbox-container">
                                             <input id={`checkBoxFeature${index}${value.specific}`} type="checkbox"
                                                          checked={this.state.featureDetails[[value.unitId, this.state.id, valuef.featureId]] ?

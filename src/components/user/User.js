@@ -9,40 +9,43 @@ export default class User extends Component {
     }
   }
   componentDidMount() {
-    get('userDetails', {"userId": this.props.id})
-        .then(res => {
-          if (res !== undefined) {
-            if (res.status === 200) {
-              this.setState({
-                user: res.data
-              });
-            }
-          }
-        })
-    if (Object.keys(this.state.user).length === 0){
-      get('userProducts', {"userId": this.props.id})
+    setTimeout(() => {
+      get('userDetails', {"userId": this.props.id})
           .then(res => {
             if (res !== undefined) {
               if (res.status === 200) {
-                this.setState({
-                  user: res.data
-                });
+                  this.setState({
+                    user: res.data
+                  });
+
+                if (Object.keys(res.data).length === 0) {
+                  get('userProducts', {"userId": this.props.id})
+                      .then(res => {
+                        if (res !== undefined) {
+                          if (res.status === 200) {
+                            this.setState({
+                              user: res.data
+                            });
+                            if (Object.keys(res.data).length === 0) {
+                              get('orders', {"userId": this.props.id})
+                                  .then(res => {
+                                    if (res !== undefined) {
+                                      if (res.status === 200) {
+                                        this.setState({
+                                          orders: res.data
+                                        });
+                                      }
+                                    }
+                                  })
+                            }
+                          }
+                        }
+                      })
+                }
               }
             }
           })
-    }
-    if (Object.keys(this.state.user).length === 0){
-      get('orders', {"userId": this.props.id})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  orders: res.data
-                });
-              }
-            }
-          })
-    }
+    }, 500)
   }
   render() {
     return (

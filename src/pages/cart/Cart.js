@@ -180,7 +180,7 @@ export default class Cart extends Component {
     CartService.shoppingSelect(ids, amounts)
     CartService.setTotal(this.state.total  *105/100 + 30000);
     setTimeout(() => {
-      console.log('======================================================================')
+      console.log(AuthService.getCurrentUser().userId ,'======================================================================')
 
       console.log("getShoppingSelected: ", CartService.getShoppingSelected())
     //   CartService.removeUser()

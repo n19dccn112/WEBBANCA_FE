@@ -13,6 +13,9 @@ import TableOrder from "./TableOrder";
 import TableFeature from "./TableFeature";
 import FormFeature from "./FormFeature";
 import ChartStatus from "./ChartStatus";
+import TablePond from "./TablePond";
+import FormPond from "./FormPond";
+import FormStatusFish from "./FormStatusFish";
 
 
 export default class DashBoard extends Component {
@@ -21,7 +24,9 @@ export default class DashBoard extends Component {
     this.state = {
       user: undefined,
       table: <></>,
+      statusComponent: <FormStatusFish/>,
       cateComponent: <TableCate addNewCate={() => this.handleAddNewCate()}/>,
+      pondComponent: <TablePond addNewPond={() => this.handleAddNewPond()}/>,
       productComponent: <TableProduct addNewProc={() => this.handleAddNewProduct()}/>,
       customerComponent: <TableCustomer addNewUser={() => this.handleAddNewUser()}/>,
       orderComponent: <TableOrder addNewOrder={() => this.handleAddNewOrder()}/>,
@@ -67,9 +72,20 @@ export default class DashBoard extends Component {
       cateComponent: <FormCate/>,
     })
   }
+  async handleAddNewPond() {
+    await this.setState({
+      pondComponent: <FormPond/>,
+    })
+  }
+
   async resetProductComponent() {
     await this.setState({
       productComponent: <TableProduct addNewProc={() => this.handleAddNewProduct()}/>,
+    })
+  }
+  async resetStatusFishComponent(){
+    await this.setState({
+      statusComponent: <FormStatusFish/>
     })
   }
   async resetOrderComponent() {
@@ -101,6 +117,11 @@ export default class DashBoard extends Component {
 
     console.log("resetCateComponent kết thúc")
   }
+  async resetPondComponent() {
+    await this.setState({
+      pondComponent: <TablePond addNewPond={() => this.handleAddNewPond()}/>,
+    })
+  }
   render() {
     return (this.state.user &&
         <section>
@@ -119,6 +140,10 @@ export default class DashBoard extends Component {
                         to="/dashboard/categoryTypes" onClick={() => this.resetCateComponent()}>
                       <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý loại hàng</span>
                     </Link>
+                    <Link className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
+                          to="/dashboard/ponds" onClick={() => this.resetPondComponent()}>
+                      <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý kho hàng</span>
+                    </Link>
                     <Link
                         className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
                         to="/dashboard/customers" onClick={() => this.resetUserComponent()}>
@@ -128,6 +153,11 @@ export default class DashBoard extends Component {
                         className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
                         to="/dashboard/products" onClick={() => this.resetProductComponent()}>
                       <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý sản phẩm</span>
+                    </Link>
+                    <Link
+                        className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
+                        to="/dashboard/statusFish" onClick={() => this.resetStatusFishComponent()}>
+                      <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý trạng thái cá</span>
                     </Link>
                     <Link
                         className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
@@ -158,6 +188,13 @@ export default class DashBoard extends Component {
                   <FormCate/>
                 </Route>
 
+                <Route exact path="/dashboard/ponds">
+                  {this.state.pondComponent}
+                </Route>
+                <Route exact path="/dashboard/ponds/:id">
+                  <FormPond/>
+                </Route>
+
                 <Route exact path="/dashboard/featureTypes">
                   {this.state.featureComponent}
                 </Route>
@@ -171,6 +208,10 @@ export default class DashBoard extends Component {
                 </Route>
                 <Route exact path="/dashboard/products/:id">
                   <FormProduct/>
+                </Route>
+
+                <Route exact path="/dashboard/statusFish">
+                  {this.state.statusComponent}
                 </Route>
 
                 <Route exact path="/dashboard/orders">

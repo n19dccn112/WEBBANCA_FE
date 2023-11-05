@@ -19,6 +19,7 @@ class ModalAddOrEditCategory extends Component {
       key: 0,
       name: '',
       descript: '',
+      dailyPrice: 0,
       type: 'success',
       isShow: false,
       message: '',
@@ -33,8 +34,9 @@ class ModalAddOrEditCategory extends Component {
               console.log("categories: ", res.data)
             if (res.status === 200)
               this.setState({
-                name: res.data.categoryTypeName,
-                descript: res.data.categoryTypeDescription,
+                name: res.data.categoryName,
+                descript: res.data.categoryDescription,
+                dailyPrice: res.data.dailyPrice,
               });
           });
       this.setState({
@@ -52,6 +54,11 @@ class ModalAddOrEditCategory extends Component {
       descript: e.target.value,
     })
   }
+  dailyPriceOnChange(e) {
+    this.setState({
+      dailyPrice: e.target.value,
+    })
+  }
   nameOnChange(e) {
     this.setState({
       name: e.target.value,
@@ -64,7 +71,9 @@ class ModalAddOrEditCategory extends Component {
       let params = {};
       params['categoryName'] = this.state.name;
       params['categoryDescription'] = this.state.descript;
+      params['dailyPrice'] = this.state.dailyPrice
       params['categoryTypeId'] = this.props.categoryTypeId;
+
       console.log(params);
       if (this.props.id) {
         put(`categories/${this.props.id}`, params)
@@ -116,7 +125,7 @@ class ModalAddOrEditCategory extends Component {
             <div className="block-body">
               <Form onSubmit={(e) => this.doCreate(e)} ref={c => {this.form = c;}}>
                 <div className="row body-background-white">
-                  {this.props.id !== 0 && (<div className="col-sm-6">
+                  {this.props.id !== 0 && (<div className="col-sm-3">
                     <div className="mb-4">
                       <label className="form-label" htmlFor="cateid">Id</label>
                       <input className="form-control" name="cateid" id="cateid" value={this.state.id}
@@ -129,6 +138,13 @@ class ModalAddOrEditCategory extends Component {
                       <label className="form-label" htmlFor="catename">Tên</label>
                       <input className="form-control" name="catename" id="catename" value={this.state.name}
                              onChange={(e) => this.nameOnChange(e)} type="text"/>
+                    </div>
+                  </div>
+                  <div className="col-sm-3">
+                    <div className="mb-4">
+                      <label className="form-label" htmlFor="catename">Chi phí hằng ngày</label>
+                      <input className="form-control" name="catename" id="catename" value={this.state.dailyPrice}
+                             onChange={(e) => this.dailyPriceOnChange(e)} type="text"/>
                     </div>
                   </div>
                 </div>

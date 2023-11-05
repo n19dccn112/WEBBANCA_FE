@@ -27,7 +27,7 @@ class FormCate extends Component {
   componentDidMount() {
     console.log(this.props.match.params.id);
     if (this.props.match.params.id) {
-      get(`categoryType/${this.props.match.params.id}`)
+      get(`categoryTypes/${this.props.match.params.id}`)
           .then(res => {
             if (res !== undefined)
                 console.log("categoryType: ", res.data)
@@ -57,6 +57,7 @@ class FormCate extends Component {
       name: e.target.value,
     })
   }
+
   async doCreate(e) {
     e.preventDefault();
     this.form.validateAll();
@@ -64,6 +65,7 @@ class FormCate extends Component {
       let params = {};
       params['categoryTypeName'] = this.state.name;
       params['categoryTypeDescription'] = this.state.descript;
+      params['dailyPrice'] = this.state.dailyPrice
       console.log(params);
       if (this.props.match.params.id) {
         put(`categoryTypes/${this.props.match.params.id}`, params)
@@ -118,15 +120,15 @@ class FormCate extends Component {
                   {this.props.match.params.id && (<div className="col-sm-6">
                     <div className="mb-4">
                       <label className="form-label" htmlFor="cateid">Id</label>
-                      <Input className="form-control" name="cateid" id="cateid" value={this.state.id} onChange={(e) => this.idOnChange(e)}
-                             type="text" validations={[required]} readOnly={true}/>
+                      <input className="form-control" name="cateid" id="cateid" value={this.state.id} onChange={(e) => this.idOnChange(e)}
+                             type="text" readOnly={true}/>
                     </div>
                   </div>)}
                   <div className="col-sm-6">
                     <div className="mb-4">
                       <label className="form-label" htmlFor="catename">Tên</label>
-                      <Input className="form-control" name="catename" id="catename" value={this.state.name}
-                             onChange={(e) => this.nameOnChange(e)} type="text" validations={[required]}/>
+                      <input className="form-control" name="catename" id="catename" value={this.state.name}
+                             onChange={(e) => this.nameOnChange(e)} type="text"/>
                     </div>
                   </div>
                 </div>

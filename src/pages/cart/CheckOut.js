@@ -183,9 +183,15 @@ export default class CheckOut extends Component {
     })
   }
   handleOrder = () => {
-    console.log("CartService.getShoppingSelected(): ", CartService.getShoppingSelected(),
-        Object.keys(CartService.getShoppingSelected()[AuthService.getCurrentUser().userId]),
-            Object.values(CartService.getShoppingSelected()[AuthService.getCurrentUser().userId]))
+    console.log("CartService.getShoppingSelected(): ", CartService.getShoppingSelected())
+    if (CartService.getShoppingSelected() === undefined || CartService.getShoppingSelected() === null){
+      this.setState({
+        message: `Giỏ hàng rỗng`,
+        type: 'danger',
+        isShow: true,
+      })
+      return
+    }
     let listKey = Object.keys(CartService.getShoppingSelected()[AuthService.getCurrentUser().userId])
     let listValue = Object.values(CartService.getShoppingSelected()[AuthService.getCurrentUser().userId])
     // return

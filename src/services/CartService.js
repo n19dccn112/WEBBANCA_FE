@@ -42,17 +42,23 @@ class CartService {
     let userCart = this.getCurrentCart();
     const userId = AuthService.getCurrentUser().userId;
     let listItems = {}
-    if (localStorage.getItem('shoppingSelect') && localStorage.getItem('shoppingSelect')[userId] &&
-        localStorage.getItem('shoppingSelect')[userId].length !== 0) this.removeShoppingSelected()
+
+    if (localStorage.getItem('shoppingSelect') &&
+        localStorage.getItem('shoppingSelect')[userId] &&
+        localStorage.getItem('shoppingSelect')[userId].length !== 0)
+      this.removeShoppingSelected()
+
     setTimeout(() => {
       console.log("idAmounts: ", ids, amounts)
       ids.map((id, index) => {
         let amount = amounts[index]
+
         if (!userCart) userCart = {}
         if (!listItems) listItems = {}
         if (!userCart.hasOwnProperty(userId)) userCart[userId] = {}
+
         listItems[id] = Number(amount)
-        console.log("id, amount, listItems: ", id, amount, listItems)
+        console.log("indexx, id, amount, listItems: ", index, id, amount, listItems)
       })
       setTimeout(() =>  {
         userCart[userId] = listItems
