@@ -35,6 +35,7 @@ export default class CheckOut extends Component {
     this.handleOnChangeUserDetailId = this.handleOnChangeUserDetailId.bind(this);
   }
   componentDidMount() {
+    console.log("getShoppingSelected: ", CartService.getShoppingSelected())
     get('paymentMethod')
         .then(res => {
           if (res !== undefined)
@@ -183,7 +184,7 @@ export default class CheckOut extends Component {
     })
   }
   handleOrder = () => {
-    console.log("CartService.getShoppingSelected(): ", CartService.getShoppingSelected())
+    console.log("CartService.getShoppingSelected(),userId: ", CartService.getShoppingSelected(), AuthService.getCurrentUser().userId)
     if (CartService.getShoppingSelected() === undefined || CartService.getShoppingSelected() === null){
       this.setState({
         message: `Giỏ hàng rỗng`,
@@ -224,18 +225,18 @@ export default class CheckOut extends Component {
               type: 'success',
               isShow: true,
             });
-            console.log("Đặt đơn hàng thành công")
+            //console.log("Đặt đơn hàng thành công")
             get('orders/phone', {"phone": this.state.phone})
                 .then(res => {
                   if (res && res.status === 200) {
-                    console.log("orders/phone thành công")
+                    //console.log("orders/phone thành công")
                     let param = {}
                     param['orderId'] = res.data.orderId;
 
                     listKey.map((value, index) => {
                       param['unitDetailId'] = parseInt(value, 10);
                       param['amount'] = listValue[index];
-                      console.log("KET QUA: ", param)
+                      //console.log("KET QUA: ", param)
                       post('orderDetails', param).then(res => {
                         if (res && res.status === 201) {
                           setTimeout(() => {
@@ -263,6 +264,7 @@ export default class CheckOut extends Component {
     this.setState({
       isShow: !this.setState.isShow,
     })
+    setTimeout(() =>  window.location.reload(), 3000)
   }
   checkOut(e) {
     e.preventDefault();
@@ -336,9 +338,6 @@ export default class CheckOut extends Component {
                               data-bs-target="#modalCart">Cập nhật địa chỉ
                         <i className="fa fa-angle-right ms-2"></i>
                       </button>
-
-                      <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message}
-                               key={this.state.message}/>
                       <div className="block-body">
                         <div className="row">
                           <div className="form-group col-md-6">
@@ -382,6 +381,10 @@ export default class CheckOut extends Component {
                               {paypalModal}
                             </div>
                           }
+
+
+                          <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message}
+                                   key={this.state.message}/>
                         </div>
                         {/* /Invoice Address*/}
                       </div>

@@ -38,7 +38,7 @@ class CartService {
     setTimeout(() => localStorage.setItem('shoppingSelect', JSON.stringify(shoppingSelectNew)), 500)
     setTimeout(() => console.log("sau remove: ", shoppingSelectNew, localStorage.getItem('shoppingSelect')), 1000)
   }
-  shoppingSelect(ids, amounts){
+  setShoppingSelect(ids, amounts){
     let userCart = this.getCurrentCart();
     const userId = AuthService.getCurrentUser().userId;
     let listItems = {}
@@ -58,13 +58,13 @@ class CartService {
         if (!userCart.hasOwnProperty(userId)) userCart[userId] = {}
 
         listItems[id] = Number(amount)
-        console.log("indexx, id, amount, listItems: ", index, id, amount, listItems)
+        console.log("index, id, amount, listItems: ", index, id, amount, listItems)
       })
       setTimeout(() =>  {
         userCart[userId] = listItems
         console.log("userCart: ", userCart)
         localStorage.setItem('shoppingSelect', JSON.stringify(userCart));
-      }, 500)
+      }, 1000)
       setTimeout(() => console.log('add xong shoppingSelect', localStorage.getItem('shoppingSelect')), 1000)
     }, 1000)
   }
@@ -128,19 +128,20 @@ class CartService {
     if (!userCart.hasOwnProperty(userId) || !shoppingSelect.hasOwnProperty(userId)) return;
     let conLai = {}
 
-    // console.log("removeUser: userCart, shoppingSelect 1: ", userCart, shoppingSelect)
-    Object.keys(userCart[userId]).map((key, index) => {
-      // console.log("userCart[userId], key, index, Object.values(userCart)[index]: ",
-      //     userCart[userId], key, index, Object.values(userCart)[index])
-      console.log("Object.keys(shoppingSelect[userId]): ", Object.keys(shoppingSelect[userId]),
-          Object.keys(shoppingSelect[userId]).includes(key))
-      if (!Object.keys(shoppingSelect[userId]).includes(key))
-        conLai[key] = Object.values(userCart[userId])[index]
+    console.log("111111111111 userId, userCart, shoppingSelect: ", userId, userCart[userId], shoppingSelect[userId])
+    Object.keys(userCart[userId]).map((unitD, index) => {
+      console.log("unitD,", unitD)
+      console.log("Object.keys(shoppingSelect[userId])", Object.keys(shoppingSelect[userId]))
+      console.log("typeof unitD,", typeof unitD)
+      console.log("typeof Object.keys(shoppingSelect[userId])",typeof Object.keys(shoppingSelect[userId]))
+      console.log("includes: ", Object.keys(shoppingSelect[userId]).includes(unitD))
+      if (!Object.keys(shoppingSelect[userId]).includes(unitD))
+        conLai[unitD] = Object.values(userCart[userId])[index]
     })
     let cart = this.getCurrentCart();
     cart[userId] = conLai
     localStorage.setItem('cart', JSON.stringify(cart));
-    // console.log("removeUser: conLai 2: ", cart, this.getCurrentCart())
+    console.log("removeUser: conLai 2: ", cart, this.getCurrentCart())
   }
   getCurrentCart() {
     return JSON.parse(localStorage.getItem('cart'));
@@ -165,13 +166,17 @@ class CartService {
     // console.log("2: JSON.parse(localStorage.getItem('total')):: ", JSON.parse(localStorage.getItem('total')))
   }
   removeTotal(){
+    console.log("remove total 1: ", this.getTotalCart())
     let number = JSON.parse(localStorage.getItem('total'))
     let numberNew = {}
     Object.keys(number).map((key, index) => {
-      if (key !== AuthService.getCurrentUser().userId)
+      console.log("111111111 remove total: ", typeof key, typeof AuthService.getCurrentUser().userId, key !== AuthService.getCurrentUser().userId.toString(), key, AuthService.getCurrentUser().userId )
+      if (key !== AuthService.getCurrentUser().userId.toString())
         numberNew[key] = Object.values(number)[index]
     })
-    localStorage.setItem('total', JSON.stringify(numberNew));
+    setTimeout(() => localStorage.setItem('total', JSON.stringify(numberNew)), 500);
+    setTimeout(() => console.log(localStorage.getItem('total')), 1000)
+    console.log("remove total 2: ", numberNew)
   }
   getTotalCart(){
     return (this.getCurrentCart() !== null && this.getCurrentCart()[AuthService.getCurrentUser().userId] !== undefined) ?

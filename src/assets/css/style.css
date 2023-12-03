@@ -16082,6 +16082,16 @@ a.accordion-link:focus {
     font-weight: bold;
 }
 
+.save-button {
+    color: rgba(217, 9, 9, 0.82);
+    font-weight: bold;
+}
+
+.save-button-enable {
+    color: rgba(154, 21, 21, 0.11);
+    font-weight: bold;
+}
+
 .seen-button {
     color: #917929;
     font-weight: bold;
@@ -16642,6 +16652,16 @@ a.accordion-link:focus {
 .badge-danger-light {
     color: #dc3545;
     background-color: #f8d7da
+}
+
+.badge-warning-light1 {
+    color: #ffc107;
+    background-color: #fce088
+}
+
+.badge-danger-light1 {
+    color: #dc3545;
+    background-color: #fdb2b9
 }
 
 .badge-light-light {

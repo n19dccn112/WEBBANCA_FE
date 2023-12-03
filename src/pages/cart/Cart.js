@@ -40,11 +40,9 @@ export default class Cart extends Component {
           return `${result},${item.unitId}`;
         }
       }, "");
-      console.log("paramsUnit: ", paramsUnit)
       get('unit', paramsUnit)
           .then(res => {
             if (res && res.status === 200) {
-              console.log("units: ", res.data)
               this.setState({
                 units: res.data,
                 total: total,
@@ -53,90 +51,127 @@ export default class Cart extends Component {
           });
     }
   }
-  loadPage (){
+  getEventProduct(resUnitDetail){
+    let unitDetails = []
+    Object.values(resUnitDetail).map((value, index) => {
+      get('eventProducts', {"productIdMaxEvent": value.productId})
+          .then(res => {
+            if (res !== undefined) {
+              if (res.status === 200) {
+                if (Object.values(res.data).length !== 0) {
+                  get(`events/${res.data[0].eventId}`)
+                      .then(res1 => {
+                        if (res1 !== undefined) {
+                          if (res1.status === 200) {
+                            value['productPrice'] = Math.floor((value.productPrice *
+                                ((100 - res1.data.discountValue) / 100)) / 1000) * 1000
+                            unitDetails.push(value)
+                          }
+                        }
+                      })
+                }
+                else
+                  unitDetails.push(value)
+              }
+            }
+          })
+    })
+    setTimeout(() => {
+      console.log("8888888888888: ", unitDetails)
+      this.setState({unitDetails: unitDetails,}
+      )
+    }, 1000)
+  }
+  getUnitDetail(params, items){
+    get('unitDetail', params)
+        .then(res => {
+          if (res && res.status === 200) {
+            this.getEventProduct(res.data)
+            let soldEnd = {}
+            let soldEndOk = {}
+            let checked = {}
+            Object.values(res.data).map((value, key) => {
+              checked[value.unitDetailId] = false
+              if (value.unitDetailAmount < items[value.unitDetailId]) {
+                soldEnd[value.unitDetailId] = value.unitDetailAmount
+                soldEndOk[value.unitDetailId] = true
+              }else {
+                soldEndOk[value.unitDetailId] = false
+              }
+            })
+            setTimeout(() => this.setState({
+              soldEnd: soldEnd,
+              soldEndOk: soldEndOk,
+              checked: checked
+            }), 1000)
+          }
+        });
+  }
+  getProduct(params){
+    get('products', params)
+        .then(res => {
+          if (res && res.status === 200) {
+            this.setState({
+              products: res.data,
+            })
+            // let productsMatch = Object.values(res.data).filter(detail => detail.productId === product.productId);
+            let productsMatch = []
+            Object.values(res.data).map(value => {
+              let match = false
+              Object.values(productsMatch).map(valueM => {
+                if (valueM.productId === value.productId) {
+                  match = true
+                }
+              })
+              if (!match) {
+                productsMatch.push(value)
+              }
+            })
+            this.setState({productsMatch: productsMatch})
+            // console.log("products: ", res.data, productsMatch)
+          }
+        });
+  }
+  loadItem(items){
     const userId = AuthService.getCurrentUser().userId;
-    let items = null
     if (CartService.getCurrentCart() != null)
-    items = CartService.getCurrentCart()[userId];
-    // console.log("userId, items: ", userId, items)
+      items = CartService.getCurrentCart()[userId];
     if (!items){
       this.setState({
         unitDetails: [],
         units: [],
         products: [],
       })
-      return
+      return items
     }
     let keys = [];
     for (let key in items) {
       keys.push(key);
     }
-    console.log("key: ", userId, items)
     this.setState({
       items: items,
       keysCart: keys
     })
+    return items
+  }
+  loadPage (){
+    let items = null
+    items = this.loadItem(items)
     let params = {};
-    if (Object.keys(items).length !== 0) {
-      params['unitDetailIds'] = Object.keys(items).reduce((f, s) => `${f},${s}`);
-      // console.log("param: ", params)
-      get('products', params)
-          .then(res => {
-            if (res && res.status === 200) {
-              this.setState({
-                products: res.data,
-              })
-              // let productsMatch = Object.values(res.data).filter(detail => detail.productId === product.productId);
-              let productsMatch = []
-              Object.values(res.data).map(value => {
-                let match = false
-                Object.values(productsMatch).map(valueM => {
-                  if (valueM.productId === value.productId) {
-                    match = true
-                  }
-                })
-                if (!match) {
-                  productsMatch.push(value)
-                }
-              })
-              this.setState({productsMatch: productsMatch})
-              console.log("products: ", res.data, productsMatch)
-            }
-          });
-      get('unitDetail', params)
-          .then(res => {
-            if (res && res.status === 200) {
-              console.log("detail: ", res.data)
-              this.setState({
-                unitDetails: res.data,
-              })
-              let soldEnd = {}
-              let soldEndOk = {}
-              let checked = {}
-              Object.values(res.data).map((value, key) => {
-                checked[value.unitDetailId] = false
-                if (value.unitDetailAmount < items[value.unitDetailId]) {
-                  soldEnd[value.unitDetailId] = value.unitDetailAmount
-                  soldEndOk[value.unitDetailId] = true
-                }else {
-                  soldEndOk[value.unitDetailId] = false
-                }
-              })
-              setTimeout(() => this.setState({
-                soldEnd: soldEnd,
-                soldEndOk: soldEndOk,
-                checked: checked
-              }), 1000)
-            }
-          });
-    }
+    setTimeout(() => {
+      if (Object.keys(items).length !== 0) {
+        params['unitDetailIds'] = Object.keys(items).reduce((f, s) => `${f},${s}`);
+        // console.log("param: ", params)
+        this.getProduct(params)
+        this.getUnitDetail(params, items)
+      }
+    }, 500)
   }
   componentDidMount() {
     this.loadPage()
-    console.log("CartService.getCurrentCart(): ", CartService.getCurrentCart())
   }
   setNewValueFirstRemove(id, remain, value) {
-    console.log("id, remain, value:", id, remain, value)
+    // console.log("id, remain, value:", id, remain, value)
     if (value > 0 && value <= remain) {
       let newItems = this.state.items;
       newItems[id] = value;
@@ -146,7 +181,7 @@ export default class Cart extends Component {
           total += value.productPrice * this.state.items[value.unitDetailId]
       })
       setTimeout(() => {
-        console.log(total);
+        // console.log(total);
         CartService.addFirstRemove(id, value);
         this.setState({
           items: newItems,
@@ -166,7 +201,8 @@ export default class Cart extends Component {
     CartService.remove(id);
     this.loadPage()
   }
-  go2CheckOut() {
+  go2CheckOut(e) {
+    e.preventDefault();
     let ids = []
     let amounts = []
     let cart = CartService.getCurrentCart()[AuthService.getCurrentUser().userId];
@@ -177,15 +213,11 @@ export default class Cart extends Component {
       }
     })
     // console.log("idAmounts: ", ids, amounts)
-    CartService.shoppingSelect(ids, amounts)
-    CartService.setTotal(this.state.total  *105/100 + 30000);
     setTimeout(() => {
-      console.log(AuthService.getCurrentUser().userId ,'======================================================================')
-
-      console.log("getShoppingSelected: ", CartService.getShoppingSelected())
-    //   CartService.removeUser()
-    //   CartService.removeTotal()
-    }, 3000)
+      CartService.setShoppingSelect(ids, amounts)
+      CartService.setTotal(this.state.total  * 105/100 + 30000);
+      window.location.href = e.target.href;
+    }, 2000)
   }
   handleMinus(id, remain) {
     const value = Number(this.state.items[id]) - 1;
@@ -259,7 +291,9 @@ export default class Cart extends Component {
                             </div>
                           </div>
                           <div className="cart-body">
-                            {this.state.products !== [] && this.state.checked !== {} &&
+                            {Object.keys(this.state.products).length !== 0 &&
+                                Object.keys(this.state.checked).length !== 0 &&
+                                  Object.keys(this.state.unitDetails).length !== 0 &&
                                 this.state.unitDetails.map((unitDetail, index) => (
                                 <div className="cart-item" key={index}>
                                   <div className="row d-flex align-items-center text-center">
@@ -276,7 +310,8 @@ export default class Cart extends Component {
                                     </div>
                                     <div className="col-3">
                                       <div className="d-flex align-items-center">
-                                        {Object.values(this.state.productsMatch).map((valueP, indexP) => (
+                                        {Object.keys(this.state.productsMatch).keys() !== 0
+                                            && Object.values(this.state.productsMatch).map((valueP, indexP) => (
                                             // console.log("valueP.productId === unitDetail.productId: ", valueP, valueP.productId, unitDetail.productId)
                                           valueP.productId === unitDetail.productId &&
                                           <div>
@@ -293,12 +328,14 @@ export default class Cart extends Component {
                                         ))}
                                       </div>
                                     </div>
-
                                     {this.state.units[index] &&
                                         <div className="col-1">{this.state.units[index].unitName.substring(5)}</div>}
                                     {this.state.unitDetails[index] &&
-                                        <div className="col-2"><NumberFormat value={this.state.unitDetails[index].productPrice} displayType={'text'}
-                                                                             thousandSeparator={true} suffix=' vnđ'/></div>}
+                                        <div className="col-2">
+                                          <NumberFormat
+                                              value={this.state.unitDetails[index].productPrice}
+                                              displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                                        </div>}
                                     <div className="col-2">
                                       <div className="d-flex align-items-center">
                                         <div className="btn btn-items btn-items-decrease"
@@ -335,7 +372,7 @@ export default class Cart extends Component {
                         {this.state.total !== 0 &&
                         <a className="btn btn-dark"
                            href="/checkout"
-                           onClick={() => this.go2CheckOut()}>
+                           onClick={(e) => this.go2CheckOut(e)}>
                           Thanh toán<i className="fa fa-chevron-right"></i>
                         </a>}
                       </div>

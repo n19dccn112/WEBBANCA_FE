@@ -33,7 +33,8 @@ export default class ProductView extends Component {
       updateUnit: false,
       indexSize: -1,
       isLove: false,
-      userProducts: {}
+      userProducts: {},
+      event: {}
     }
     this.star = [1, 2, 3, 4, 5];
     this.imageLove = ["https://img5.thuthuatphanmem.vn/uploads/2021/07/17/anh-icon-trai-tim-don-gian_054623052.png",
@@ -217,6 +218,26 @@ export default class ProductView extends Component {
         </ul>
       })
     this.userProduct()
+
+    setTimeout(() => {
+        get('eventProducts', {"productIdMaxEvent": this.props.product.productId})
+            .then(res => {
+              if (res !== undefined) {
+                if (res.status === 200 && Object.values(res.data).length !== 0) {
+                  get(`events/${res.data[0].eventId}`)
+                      .then(res1 => {
+                        if (res1 !== undefined) {
+                          if (res1.status === 200) {
+                            this.setState({
+                              event: res1.data
+                            });
+                          }
+                        }
+                      })
+                }
+              }
+            })
+    }, 1000)
   }
   add2Cart() {
     if (this.props.product.amountProduct === 0) {
@@ -254,6 +275,8 @@ export default class ProductView extends Component {
       type: 'success',
       isShow: !this.setState.isShow,
     });
+
+    setTimeout(() =>  window.location.reload(), 3000)
   }
   handleClickChecked(){
     put(`userProducts/${this.state.userProducts.userProductId}`, {"isLove": !this.state.isLove ? "true" : "false"})
@@ -294,12 +317,22 @@ export default class ProductView extends Component {
               <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between">
                 <div className="list-inline mb-2 mb-sm-0">
                   <div className="list-inline-item h4 mb-0 text-red fw-title"><del style={{marginRight : '2px'}}/>
-                    {this.state.minPrice === this.state.maxPrice ?
-                        <div><NumberFormat value={this.state.minPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
-                        <div>
-                          <NumberFormat value={this.state.minPrice} displayType={'text'} thousandSeparator={true}/> -
-                          <NumberFormat value={this.state.maxPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
-                        </div>
+                    {Object.keys(this.state.event).length === 0 ?
+                        (this.state.minPrice === this.state.maxPrice ?
+                            <div><NumberFormat value={this.state.minPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
+                            <div>
+                              <NumberFormat value={this.state.minPrice} displayType={'text'} thousandSeparator={true}/> -
+                              <NumberFormat value={this.state.maxPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                            </div>) : (
+                            this.state.minPrice === this.state.maxPrice ?
+                                <div><NumberFormat value={Math.floor((this.state.minPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                                   displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
+                                <div>
+                                  <NumberFormat value={Math.floor((this.state.minPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                                displayType={'text'} thousandSeparator={true}/> -
+                                  <NumberFormat value={Math.floor((this.state.maxPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                                displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                                </div>)
                     }
                   </div>
                   <div className="list-inline-item text-muted fw-light">

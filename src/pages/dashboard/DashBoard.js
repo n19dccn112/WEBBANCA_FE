@@ -16,6 +16,9 @@ import ChartStatus from "./ChartStatus";
 import TablePond from "./TablePond";
 import FormPond from "./FormPond";
 import FormStatusFish from "./FormStatusFish";
+import TableEvent from "./TableEvent";
+import FormEvent from "./FormEvent";
+import TablePromotion from "./TablePromotion";
 
 
 export default class DashBoard extends Component {
@@ -26,12 +29,14 @@ export default class DashBoard extends Component {
       table: <></>,
       statusComponent: <FormStatusFish/>,
       cateComponent: <TableCate addNewCate={() => this.handleAddNewCate()}/>,
+      eventComponent: <TableEvent addNewEvent={() => this.handleAddNewEvent()}/>,
+      promotionComponent: <TablePromotion addNewEvent={()=> this.handleAddNewEvent()}/>,
       pondComponent: <TablePond addNewPond={() => this.handleAddNewPond()}/>,
       productComponent: <TableProduct addNewProc={() => this.handleAddNewProduct()}/>,
       customerComponent: <TableCustomer addNewUser={() => this.handleAddNewUser()}/>,
       orderComponent: <TableOrder addNewOrder={() => this.handleAddNewOrder()}/>,
       featureComponent: <TableFeature addNewFeature={() => this.handleAddNewFeature()}/>,
-      statusChartComponent: <ChartStatus addNewChartStatus={() => this.handleAddNewChartStatus()}/>
+      statusChartComponent: <ChartStatus />
     }
   }
   componentWillMount() {
@@ -72,6 +77,12 @@ export default class DashBoard extends Component {
       cateComponent: <FormCate/>,
     })
   }
+  async handleAddNewEvent() {
+    await this.setState({
+      eventComponent: <FormEvent/>,
+    })
+  }
+
   async handleAddNewPond() {
     await this.setState({
       pondComponent: <FormPond/>,
@@ -117,6 +128,16 @@ export default class DashBoard extends Component {
 
     console.log("resetCateComponent kết thúc")
   }
+  async resetEventComponent() {
+    await this.setState({
+      eventComponent: <TableEvent addNewEvent={() => this.handleAddNewEvent()}/>,
+    })
+  }
+  async resetPromotionComponent() {
+    await this.setState({
+      eventComponent: <TablePromotion />,
+    })
+  }
   async resetPondComponent() {
     await this.setState({
       pondComponent: <TablePond addNewPond={() => this.handleAddNewPond()}/>,
@@ -139,6 +160,14 @@ export default class DashBoard extends Component {
                     <Link className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
                         to="/dashboard/categoryTypes" onClick={() => this.resetCateComponent()}>
                       <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý loại hàng</span>
+                    </Link>
+                    <Link className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
+                          to="/dashboard/events" onClick={() => this.resetEventComponent()}>
+                      <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý sự kiện</span>
+                    </Link>
+                    <Link className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
+                          to="/dashboard/promotions" onClick={() => this.resetPromotionComponent()}>
+                      <span><svg className="svg-icon svg-icon-heavy me-2"></svg>Quản lý khuyến mãi</span>
                     </Link>
                     <Link className="list-group-item d-flex justify-content-between align-items-center text-decoration-none"
                           to="/dashboard/ponds" onClick={() => this.resetPondComponent()}>
@@ -187,6 +216,16 @@ export default class DashBoard extends Component {
                 <Route exact path="/dashboard/categoryTypes/:id">
                   <FormCate/>
                 </Route>
+                <Route exact path="/dashboard/events">
+                  {this.state.eventComponent}
+                </Route>
+                <Route exact path="/dashboard/events/:id">
+                  <FormEvent/>
+                </Route>
+                <Route exact path="/dashboard/promotions">
+                  {this.state.promotionComponent}
+                </Route>
+
 
                 <Route exact path="/dashboard/ponds">
                   {this.state.pondComponent}

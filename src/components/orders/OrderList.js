@@ -13,16 +13,21 @@ class OrderList extends Component {
     get('orders')
         .then(res => {
           if (res !== undefined)
-            if (res.status === 200)
+            if (res.status === 200) {
               this.setState({
                 orders: res.data
               });
+
+              if (this.props.handleNumberPage !== undefined)
+                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
+            }
         });
   }
   render() {
     let listOrders = this.state.orders
     return (
         listOrders.map((order, index) => {
+          if (index < this.props.maxNumber && index >= this.props.minNumber)
           return (
               <Order
                   id={order.orderId}

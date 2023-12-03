@@ -8,7 +8,7 @@ class Product extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // event: [],
+      event: {},
       images : [],
       products: []
     }
@@ -105,6 +105,27 @@ class Product extends Component {
   }
   componentDidMount() {
     setTimeout(() => this.userProducts(), 500)
+    setTimeout(() => {
+      console.log("gọi events")
+      if (!this.props.isTable)
+        get('eventProducts', {"productIdMaxEvent": this.props.productId})
+            .then(res => {
+              if (res !== undefined) {
+                if (res.status === 200 && Object.values(res.data).length !== 0) {
+                  get(`events/${res.data[0].eventId}`)
+                      .then(res => {
+                        if (res !== undefined) {
+                          if (res.status === 200) {
+                            this.setState({
+                              event: res.data
+                            });
+                          }
+                        }
+                      })
+                }
+              }
+            })
+    })
   }
   handleDate(dateStr){
     const date = new Date(dateStr);
@@ -151,25 +172,25 @@ class Product extends Component {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     const isWithin30Days = daysDiff <= 30;
 
-      if (this.props.isDiscount === true && this.state.event.length === 0)
+      if (this.props.isDiscount === true && Object.keys(this.state.event).length === 0)
         return (<div></div>);
       if (this.props.isNew === true && !isWithin30Days)
         return (<div></div>);
       return (<div className="col-xl-4 col-6">
             <div className="product detail-background">
               <div className="product-image">
-                {/*{this.props.remain === 0 ? <div className="ribbon ribbon-danger">Bán hết</div> : ''}*/}
+                {this.props.amountProduct === 0 ? <div className="ribbon ribbon-danger">Bán hết</div> : ''}
                 <div className="image-container">
                   {this.props.images.length > 0 ?
                       (<img src={this.props.images[0]} style={{width: '100%', height: '200px'}} alt="product"/>) :
                       (<img src={Image} style={{width: '100%', height: '200px'}} alt="product"/>)
                   }
-                  {/*{this.state.event.length === 0 ? ('') : (*/}
-                  {/*    <div className="discount-sticker">*/}
-                  {/*      <i className="fas fa-tag"></i>*/}
-                  {/*      <span className="discount-text">Giảm {this.state.event.discountValue}%</span>*/}
-                  {/*    </div>*/}
-                  {/*)}*/}
+                  {Object.keys(this.state.event).length === 0 ? ('') : (
+                      <div className="discount-sticker">
+                        <i className="fas fa-tag"></i>
+                        <span className="discount-text">Giảm {this.state.event.discountValue}%</span>
+                      </div>
+                  )}
                   {isWithin30Days ? (
                       <div className="ribbon2 ribbon-new">new</div>
                   ) : ''}
@@ -195,24 +216,45 @@ class Product extends Component {
                     <p className="text-muted text-sm mb-1">{key}</p>
                 ))}
 
-                {/*<p className="text-muted text-sm mb-1">Còn lại: {this.props.remain}</p>*/}
+                <p className="text-muted text-sm mb-1">Còn lại: {this.props.amountProduct}</p>
                 <h3 className="h6 text-uppercase mb-1">
                   <Link className="title-small" to={'/products/' + this.props.productId}>
                     {this.props.productName}
                   </Link>
                 </h3>
-                <span className="text-red bold-text">
-              {this.props.minPrice === this.props.maxPrice ? (
-                  <NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true}
-                                suffix=" vnđ"/>
-              ) : (
-                  <div>
-                    <NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true}/> -
-                    <NumberFormat value={this.props.maxPrice} displayType={'text'} thousandSeparator={true}
-                                  suffix=" vnđ"/>
-                  </div>
-              )}
-            </span>
+                <div className="container1">
+                  <span className="text-red bold-text" style={{fontSize: "14px"}}>
+                  {Object.keys(this.state.event).length === 0 ? (
+                      this.props.minPrice === this.props.maxPrice ?
+                          <div><NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
+                          <div>
+                            <NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true}/> -
+                            <NumberFormat value={this.props.maxPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                          </div>
+                  ) : (
+                      this.props.minPrice === this.props.maxPrice ?
+                          <div><NumberFormat value={Math.floor((this.props.minPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                             displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
+                          <div>
+                            <NumberFormat value={Math.floor((this.props.minPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                          displayType={'text'} thousandSeparator={true}/> -
+                            <NumberFormat value={Math.floor((this.props.maxPrice * ((100 - this.state.event.discountValue)/100))/1000)*1000}
+                                          displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                          </div>
+                  )}
+                </span>
+                  <span className="list-inline-item text-muted fw-light" style={{fontSize: "12px", textDecoration: "line-through"}}>
+                    {this.props.minPrice === this.props.maxPrice ?
+                        <div><NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/></div> :
+                        <div>
+                          <NumberFormat value={this.props.minPrice} displayType={'text'} thousandSeparator={true}/> -
+                          <NumberFormat value={this.props.maxPrice} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                        </div>
+                      }
+                  <del>
+                  </del>
+                </span>
+                </div>
               </div>
             </div>
           </div>

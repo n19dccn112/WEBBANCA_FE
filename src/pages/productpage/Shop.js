@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import ProductList from '../../components/products/ProductList'
 import LeftBar from './LeftBar'
 import Modal from './Modal';
+import PageSlide from "../pageFoot/PageSlide";
 
 export default class Shop extends Component {
   constructor(props) {
@@ -17,10 +18,42 @@ export default class Shop extends Component {
       maxPriceFilter: 1000000,
       isNew: false,
       isDiscount: false,
+
+      pageNumber: 0,
+      minNumber: 0,
+      maxNumber: 12,
+      numberIndex: 1,
+      pageComponent: [],
+      numberPage: 1
     }
     this.productList = React.createRef();
   }
+  buildPage(){
+    let component = []
+    for (let i=1; i<=this.state.numberPage; i++){
+      component.push(
+          <li key={`SelectedShop${i}`} className={`${this.state.numberIndex === i && 'active'} page-item`}>
+            <button className="page-link" onClick={() => this.handleNumberIndex(i)}>{i}</button></li>
+      )
+    }
+    setTimeout(() => {this.setState({pageComponent :component})}, 200)
+  }
+  handleNumberIndex(numberIndex){
+    this.setState({
+      minNumber: numberIndex * 12 - 12,
+      maxNumber: numberIndex * 12,
+    })
+    this.setState({numberIndex: numberIndex})
+    setTimeout(() => {
+      console.log("min, max index:", this.state.minNumber, this.state.maxNumber, numberIndex)
+      this.buildPage()
+    }, 500)
+  }
 
+  handleNumberPage(numberPage) {
+    this.setState({numberPage: numberPage})
+    this.buildPage()
+  }
   componentDidMount() {
     // if (SearchProductIds.getquery() !== "") {
     //   let params = {};
@@ -82,26 +115,21 @@ export default class Shop extends Component {
               <div className="products-grid col-xl-9 col-lg-8 order-lg-2 detail-background">
                 <div className="row mt-lg-4 ms-lg-05">
                   <ProductList
+                      pageName={"Shop"}
+                      minNumber={this.state.minNumber} maxNumber={this.state.maxNumber}
+                      handleNumberPage={(numberPage) => this.handleNumberPage(numberPage)}
                       categoryTypeId={this.state.categoryTypeId}
                       categoryId={this.state.categoryId}
-                               productIds={this.state.productIds}
-                               key={this.state.productIds} ref={this.productList} openModel={(id) => this.openModel(id)}
-                               minPriceFilter={this.state.minPriceFilter} maxPriceFilter={this.state.maxPriceFilter}
-                               isDiscount={this.state.isDiscount} isNew={this.state.isNew}
+                      productIds={this.state.productIds}
+                      key={this.state.productIds} ref={this.productList} openModel={(id) => this.openModel(id)}
+                      minPriceFilter={this.state.minPriceFilter} maxPriceFilter={this.state.maxPriceFilter}
+                      isDiscount={this.state.isDiscount} isNew={this.state.isNew}
                   />
                 </div>
 
-                {<nav className="d-flex justify-content-center mb-5 mt-3" aria-label="page navigation">
-                  <ul className="pagination">
-                    <li className="page-item"><a className="page-link" href="#" aria-label="Previous"><span aria-hidden="true">Trước</span></a></li>
-                    <li className="page-item active"><a className="page-link" href="#">1       </a></li>
-                    <li className="page-item"><a className="page-link" href="#">2       </a></li>
-                    <li className="page-item"><a className="page-link" href="#">3       </a></li>
-                    <li className="page-item"><a className="page-link" href="#">4       </a></li>
-                    <li className="page-item"><a className="page-link" href="#">5 </a></li>
-                    <li className="page-item"><a className="page-link" href="#" aria-label="Next"><span aria-hidden="true">Sau</span></a></li>
-                  </ul>
-        </nav>}
+                <PageSlide handleNumberIndex={(numberIndex) => this.handleNumberIndex(numberIndex)}
+                           numberIndex={this.state.numberIndex} numberPage={this.state.numberPage} pageComponent={this.state.pageComponent}/>
+
               </div>
               {this.state.modelComponent}
               <LeftBar filterByCate={(id) => this.handleFilterByCate(id)}

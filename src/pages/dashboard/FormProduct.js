@@ -70,6 +70,7 @@ class FormProduct extends Component {
       speedGrowthsOk: {},
       lengthsOk: {},
     }
+    this.statusFishName = ["Sống", "Chết", "Bệnh"]
   }
   hasId(){
     if (this.props.match.params.id) {
@@ -823,7 +824,7 @@ class FormProduct extends Component {
   deleteCate(index) {
     let categories = [...this.state.categories];
     categories.splice(index, 1);
-    const categoriesOk = Object.keys(categories).length === 0 ? false : true
+    const categoriesOk = Object.keys(categories).length !== 0
     this.setState({
       categories: categories,
       categoriesOk: categoriesOk

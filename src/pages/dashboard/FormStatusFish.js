@@ -25,7 +25,8 @@ class FormStatusFish extends Component {
       isShow: false,
       message: '',
       statusFishAmount: [],
-      hasAmount: false
+      hasAmount: false,
+      sumAmount: 0
     }
     this.statusFishName = ["Sống", "Chết", "Bệnh"]
   }
@@ -44,79 +45,52 @@ class FormStatusFish extends Component {
   }
   async doCreate(e) {
     e.preventDefault();
-    let paramProduct = {}
-    paramProduct['productId'] = this.state.product.productId;
-    paramProduct['unitId'] = this.state.unit.unitId;
-    console.log("paramProduct ", paramProduct)
-    get('unitDetail', paramProduct)
-        .then(res => {
-          if (res !== undefined)
-            if (res.status === 200) {
-              this.setState({unitDetailId: res.data[0].unitDetailId})
-              console.log("unitDetailId: ", res.data, res.data[0].unitDetailId)
-            }
-        })
-    this.form.validateAll();
-    setTimeout(() => {
-      if (this.checkBtn.context._errors.length === 0) {
-        if ((this.state.standardPrice === 0 && this.state.standardPrice >= 1000) || this.state.pondAmount === 0 ||
-            (this.state.priceShip === 0 && this.state.priceShip >= 1000) || this.state.unitDetailId === 0){
-          this.setState({
-            message: `Điền đầy đủ thông tin!`,
-            type: 'danger',
-            isShow: true
-          });
-          return
-        }
-        let params = {};
-        params['standardPrice'] = this.state.standardPrice;
-        params['pondAmount'] = this.state.pondAmount;
-        params['priceShip'] = this.state.priceShip
-        params['unitDetailId'] = this.state.unitDetailId
 
-        console.log("param: ", params)
-        if (this.props.match.params.id) {
-          put(`ponds/${this.props.match.params.id}`, params)
-              .then(res => {
-                    if (res && res.status === 202)
-                      this.setState({
-                        message: `Cập nhập kho thành công!`,
-                        type: 'success',
-                        isShow: true
-                      });
-                    console.log(res);
-                  },
-                  err => {
-                    err.response && this.setState({
-                      message: `${err.response.data.error} ${err.response.data.message}`,
-                      type: 'danger',
-                      isShow: true
-                    });
-                  })
-        } else {
-          post(`ponds`, params)
-              .then(res => {
-                    if (res && res.status === 201)
-                      this.setState({
-                        message: `Tạo kho thành công!`,
-                        type: 'success',
-                        isShow: true
-                      });
-                    console.log(res);
-                  },
-                  err => {
-                    err.response && this.setState({
-                      message: `${err.response.data.error} ${err.response.data.message}`,
-                      type: 'danger',
-                      isShow: true
-                    });
-                  })
-        }
-        this.setState({
-          isShow: !this.setState.isShow,
-        })
-      }
-    }, 1000)
+    console.log("product, unit: ", this.state.product, this.state.unit)
+    if (!this.state.hasAmount){
+      this.setState({
+        message: `Điền đầy đủ thông tin!`,
+        type: 'danger',
+        isShow: true
+      });
+      return
+    }
+
+    this.statusFishName.map((value, index) => {
+      let params = {};
+      params['statusFishId'] = index + 1;
+      params['unitDetailId'] = this.state.unitDetail.unitDetailId
+
+      get('statusFishDetail', params)
+          .then(res => {
+            if (res !== undefined) {
+              if (res.status === 200) {
+                params['amount'] = this.state.statusFishAmount[index]
+                console.log("param: ", params)
+                put(`statusFishDetail/${res.data[0].statusFishDetailId}`, params)
+                    .then(res => {
+                          if (res && res.status === 202)
+                            this.setState({
+                              message: `Cập nhập trạng thái cá thành công!`,
+                              type: 'success',
+                              isShow: true
+                            });
+                          console.log(res);
+                        },
+                        err => {
+                          err.response && this.setState({
+                            message: `${err.response.data.error} ${err.response.data.message}`,
+                            type: 'danger',
+                            isShow: true
+                          });
+                        })
+                this.setState({
+                  isShow: !this.setState.isShow,
+                })
+              }
+            }
+          });
+    })
   }
   handleOnChangeSize(e){
     this.setState({
@@ -129,6 +103,7 @@ class FormStatusFish extends Component {
           if (res !== undefined) {
             if (res.status === 200) {
               console.log("unitDetail: ", res.data[0])
+              this.setState({unitDetail: res.data[0]})
               let statusAmount = [0, 0, 0]
               let statusCheck = [false, false, false]
               this.statusFishName.map((value, index) => {
@@ -144,11 +119,10 @@ class FormStatusFish extends Component {
               setTimeout(() => {
                 this.setState({
                   statusFishAmount: statusAmount,
+                  sumAmount: statusAmount[0] + statusAmount[1] + statusAmount[2],
                   hasAmount: true,
                   statusFishDetails: statusCheck,
-                  unitDetailAmount: res.data[0].unitDetailAmount
                 })
-                console.log("res.data[0].unitDetailAmount: ", res.data[0].unitDetailAmount)
               }, 1000)
             }
           }
@@ -205,7 +179,7 @@ class FormStatusFish extends Component {
     }
   }
   handleAmountStatusFish(e, index){
-    console.log("handleAmountStatusFish: ", e.target.value, this.state.statusFishAmount, this.state.unitDetailAmount)
+    console.log("handleAmountStatusFish: ", e.target.value, this.state.statusFishAmount)
     if (!this.state.statusFishDetails[index]) {
       this.setState({
         message: `Hãy chọn trạng thái trước!`,
@@ -220,7 +194,7 @@ class FormStatusFish extends Component {
     let sum = 0
     if (index === 1)  sum = amount[2] + Number(e.target.value)
     else if (index === 2)  sum = amount[1] + Number(e.target.value)
-    if (this.state.unitDetailAmount < sum)
+    if (this.state.sumAmount < sum)
       this.setState({
         message: `Đã vượt quá số lượng tồn kho`,
         type: 'danger',
@@ -228,7 +202,8 @@ class FormStatusFish extends Component {
       });
     else if (statusFishDetails[0] === true) {
       amount[index] = Number(e.target.value)
-      amount[0] = this.state.unitDetailAmount - amount[1] - amount[2]
+      console.log("amount[0] ", this.state.sumAmount, amount[1], amount[2], this.state.sumAmount - amount[1] - amount[2])
+      amount[0] = this.state.sumAmount - amount[1] - amount[2]
       this.setState({statusFishAmount: amount})
     }
   }

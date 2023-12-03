@@ -14,16 +14,21 @@ export default class PondList extends Component {
     get('ponds')
         .then(res => {
           if (res !== undefined)
-            if (res.status === 200)
+            if (res.status === 200) {
               this.setState({
                 ponds: res.data
               });
+
+              if (this.props.handleNumberPage !== undefined)
+                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
+            }
         });
   }
   render() {
     var listPonds = this.state.ponds
     return (
         listPonds.map((pond, index) => {
+          if (index < this.props.maxNumber && index >= this.props.minNumber)
           return (
               <Pond key={index}
                     id={pond.pondId}

@@ -3,6 +3,7 @@ import ProductList from '../../components/products/ProductList';
 import {del} from '../../api/callAPI';
 
 import Message from '../../util/Message';
+import PageSlide from "../pageFoot/PageSlide";
 
 export default class TableProduct extends Component {
   constructor(props) {
@@ -13,34 +14,11 @@ export default class TableProduct extends Component {
       message: '',
       key: 0,
       minNumber: 0,
-      maxNumber: 20,
-      numberIndex: 0,
+      maxNumber: 10,
+      numberIndex: 1,
       pageComponent: [],
-      selectIndex: 1,
-      pageNumber: 0
+      numberPage: 1
     }
-  }
-
-  handlePageNumber(pageNumber) {
-    this.setState({pageNumber: pageNumber})
-
-    let component = []
-    for (let i=1; i<=pageNumber; i++){
-      component.push(
-          <li key={`Selected${i}`} className={`${this.state.selectIndex===i && 'active'} page-item`}>
-            <button className="page-link" onClick={(e) => this.handleSelectPage(e, i)}>{i}</button></li>
-      )
-    }
-    this.setState({pageComponent :component})
-  }
-  handleSelectPage(e, pageIndex) {
-    this.setState({
-      minNumber: pageIndex * 20 - 20,
-      maxNumber: pageIndex * 20,
-    })
-    this.handlePageNumber(this.state.pageNumber)
-    console.log("pageNumber, this.state.minNumber, this.state.maxNumber: ",
-        pageIndex, this.state.minNumber, this.state.maxNumber)
   }
 
   async doDelete(id) {
@@ -78,11 +56,28 @@ export default class TableProduct extends Component {
       });
     }, 2000);
   }
-  handlePrevious() {
-
+  buildPage(){
+    let component = []
+    for (let i=1; i<=this.state.numberPage; i++){
+      component.push(
+          <li key={`Selected${i}`} className={`${this.state.numberIndex === i && 'active'} page-item`}>
+            <button className="page-link" onClick={() => this.handleNumberIndex(i)}>{i}</button></li>
+      )
+    }
+    setTimeout(() => {this.setState({pageComponent :component})}, 200)
   }
-  handleNext() {
+  handleNumberIndex(numberIndex){
+    this.setState({
+      minNumber: numberIndex * 10 - 10,
+      maxNumber: numberIndex * 10,
+    })
+    this.setState({numberIndex: numberIndex})
+    setTimeout(() => {this.buildPage()}, 500)
+  }
 
+  handleNumberPage(numberPage) {
+    this.setState({numberPage: numberPage})
+    this.buildPage()
   }
   render() {
     return (
@@ -106,23 +101,15 @@ export default class TableProduct extends Component {
             </tr>
             </thead>
             <tbody>
-            <ProductList minNumber={this.state.minNumber} maxNumber={this.state.maxNumber}
-                         handlePageNumber={(numberIndex) => this.handlePageNumber(numberIndex)}
-                         isTable={true} deleteProduct={(id) => this.handleDelete(id)} key={this.state.key}/>
+            <ProductList
+                pageName={"TableProduct"}
+                minNumber={this.state.minNumber} maxNumber={this.state.maxNumber}
+                handleNumberPage={(numberPage) => this.handleNumberPage(numberPage)}
+                isTable={true} deleteProduct={(id) => this.handleDelete(id)} key={this.state.key}/>
             </tbody>
           </table>
-          <nav className="d-flex justify-content-center mb-5 mt-3" aria-label="page navigation">
-            <ul className="pagination">
-              <li className="page-item"><button className="page-link" onClick={() => this.handlePrevious()} aria-label="Previous">
-                <span aria-hidden="true">Trước</span></button></li>
-
-              {this.state.pageComponent.map((value, index) => (
-                  value
-              ))}
-              <li className="page-item"><button className="page-link" onClick={() => this.handleNext()} aria-label="Next">
-                <span aria-hidden="true">Sau</span></button></li>
-            </ul>
-          </nav>
+          <PageSlide handleNumberIndex={(numberIndex) => this.handleNumberIndex(numberIndex)}
+                     numberIndex={this.state.numberIndex} numberPage={this.state.numberPage} pageComponent={this.state.pageComponent}/>
         </>
     )
   }
