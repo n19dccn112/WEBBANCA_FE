@@ -41,7 +41,7 @@ export default class Order extends Component {
         })
   }
 render() {
-    if (this.props.isTable)
+    if (this.props.isTable){
       return (
           <tr>
             <th className="py-4 align-middle"># {this.props.id}</th>
@@ -50,7 +50,7 @@ render() {
             <td className="py-4 align-middle text-center">{this.props.paymentMethodId === 1 ? 'Paypal' : 'Tiền mặt'}</td>
 
             <td className="py-4 align-middle">
-                <span className={`badge p-2 text-uppercase ${this.label[this.props.orderStatusId]}`}>{this.state.orderStatusName}</span>
+              <span className={`badge p-2 text-uppercase ${this.label[this.props.orderStatusId]}`}>{this.state.orderStatusName}</span>
             </td>
 
             <td className="py-4 align-middle text-center">
@@ -69,5 +69,6 @@ render() {
             </td>
           </tr>
       )
+    }
   }
 }

@@ -183,7 +183,7 @@ export default class CheckOut extends Component {
       name: e.target.value
     })
   }
-  handleOrder = () => {
+  handleOrder = (e) => {
     console.log("CartService.getShoppingSelected(),userId: ", CartService.getShoppingSelected(), AuthService.getCurrentUser().userId)
     if (CartService.getShoppingSelected() === undefined || CartService.getShoppingSelected() === null){
       this.setState({
@@ -210,61 +210,65 @@ export default class CheckOut extends Component {
               }
           })
     })
+    setTimeout(() => {
+      let body = {};
+      body['userId'] = AuthService.getCurrentUser().userId;
+      body['orderAddress'] = this.state.address;
+      body['orderPhone'] = this.state.phone;
+      body['paymentAmount'] = CartService.getTotal();
+      body['paymentMethodId'] = this.state.idChecked
+      // console.log("body: ", body)
+      post('orders', body).then(res => {
+            if (res && res.status === 201) {
+              this.setState({
+                message: `Đặt đơn hàng thành công`,
+                type: 'success',
+                isShow: true,
+              });
+              console.log("Đặt đơn hàng thành công")
+              get('orders/phone', {"phone": this.state.phone})
+                  .then(res => {
+                    if (res && res.status === 200) {
+                      //console.log("orders/phone thành công")
+                      let param = {}
+                      param['orderId'] = res.data.orderId;
 
-    let body = {};
-    body['userId'] = AuthService.getCurrentUser().userId;
-    body['orderAddress'] = this.state.address;
-    body['orderPhone'] = this.state.phone;
-    body['paymentAmount'] = CartService.getTotal();
-    body['paymentMethodId'] = this.state.idChecked
-    // console.log("body: ", body)
-    post('orders', body).then(res => {
-          if (res && res.status === 201) {
-            this.setState({
-              message: `Đặt đơn hàng thành công`,
-              type: 'success',
-              isShow: true,
-            });
-            //console.log("Đặt đơn hàng thành công")
-            get('orders/phone', {"phone": this.state.phone})
-                .then(res => {
-                  if (res && res.status === 200) {
-                    //console.log("orders/phone thành công")
-                    let param = {}
-                    param['orderId'] = res.data.orderId;
+                      listKey.map((value, index) => {
+                        param['unitDetailId'] = parseInt(value, 10);
+                        param['amount'] = listValue[index];
+                        console.log("San pham 1111111: ", param)
+                        post('orderDetails', param).then(res => {
+                          if (res && res.status === 201) {
+                            setTimeout(() => {
+                              this.setState({
+                                message: `Đặt chi tiết đơn hàng thành công`,
+                                type: 'success',
+                                isShow: true,
+                              });
+                              CartService.removeUser()
+                              CartService.removeTotal()
 
-                    listKey.map((value, index) => {
-                      param['unitDetailId'] = parseInt(value, 10);
-                      param['amount'] = listValue[index];
-                      //console.log("KET QUA: ", param)
-                      post('orderDetails', param).then(res => {
-                        if (res && res.status === 201) {
-                          setTimeout(() => {
-                            this.setState({
-                              message: `Đặt chi tiết đơn hàng thành công`,
-                              type: 'success',
-                              isShow: true,
-                            });
-                            CartService.removeUser()
-                            CartService.removeTotal()
-                          })
-                        }
+                              setTimeout(() => (window.location.href = "/orders"), 3000)
+                            })
+                          }
+                        })
                       })
-                    })
-                  }
-                })
-          }
-        },
-        err => {
-          err.response && this.setState({
-            message: "Đặt đơn hàng thất bại",
-            type: 'danger',
+                    }
+                  })
+            }
+          },
+          err => {
+            err.response && this.setState({
+              message: "Đặt đơn hàng thất bại",
+              type: 'danger',
+            });
+
+            setTimeout(() => (window.location.href = "/orders"), 1000)
           });
-        });
-    this.setState({
-      isShow: !this.setState.isShow,
-    })
-    setTimeout(() =>  window.location.reload(), 3000)
+      this.setState({
+        isShow: !this.setState.isShow,
+      })
+    }, 2000)
   }
   checkOut(e) {
     e.preventDefault();

@@ -84,6 +84,8 @@ export default class TableCustomer extends Component {
         <>
           <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message}
                    key={this.state.message}/>
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ KHÁCH HÀNG</h1>
           <button className="add-button" key={`'Add'${this.props.id}`} onClick={() => this.props.addNewUser()}>
             <i className="fas fa-plus-circle"></i> THÊM MỚI
           </button>

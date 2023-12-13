@@ -14,37 +14,40 @@ class OrderList extends Component {
         .then(res => {
           if (res !== undefined)
             if (res.status === 200) {
+              const reversedList = [...res.data].reverse();
               this.setState({
-                orders: res.data
+                orders: reversedList,
               });
-
-              if (this.props.handleNumberPage !== undefined)
-                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
             }
         });
+  }
+  handleI(){
+    this.setState({i: this.state.i + 1})
   }
   render() {
     let listOrders = this.state.orders
     return (
         listOrders.map((order, index) => {
-          if (index < this.props.maxNumber && index >= this.props.minNumber)
-          return (
-              <Order
-                  id={order.orderId}
-                  address={order.orderAddress}
-                  phone={order.orderPhone}
-                  timeStart={order.orderTimeStart}
-                  timeEnd={order.orderTimeEnd}
-                  paymentAmount={order.paymentAmount}
-                  paymentDate={order.paymentDate}
-                  userId={order.userId}
-                  paymentMethodId={order.paymentMethodId}
-                  orderStatusId={order.orderStatusId}
-                  key={order.orderId}
-                  isTable={this.props.isTable}
-                  deleteOrder={(id) => this.props.deleteOrder(id)}
-              />
-          )
+          if (order.orderStatusId.toString() === this.props.selectStatusId){
+            return (
+                <Order
+                    id={order.orderId}
+                    address={order.orderAddress}
+                    phone={order.orderPhone}
+                    timeStart={order.orderTimeStart}
+                    timeEnd={order.orderTimeEnd}
+                    paymentAmount={order.paymentAmount}
+                    paymentDate={order.paymentDate}
+                    userId={order.userId}
+                    paymentMethodId={order.paymentMethodId}
+                    orderStatusId={order.orderStatusId}
+                    key={order.orderId}
+                    isTable={this.props.isTable}
+                    deleteOrder={(id) => this.props.deleteOrder(id)}
+                    handleI={() => this.handleI()}
+                />
+            )
+          }
         })
     );
   }

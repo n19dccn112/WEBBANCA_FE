@@ -216,8 +216,10 @@ export default class Cart extends Component {
     setTimeout(() => {
       CartService.setShoppingSelect(ids, amounts)
       CartService.setTotal(this.state.total  * 105/100 + 30000);
-      window.location.href = e.target.href;
-    }, 2000)
+      console.log(CartService.getShoppingSelected())
+    }, 1000)
+
+    setTimeout(() => (window.location.href = e.target.href), 7000)
   }
   handleMinus(id, remain) {
     const value = Number(this.state.items[id]) - 1;
@@ -352,7 +354,7 @@ export default class Cart extends Component {
                                     </div>
                                     {this.state.unitDetails[index] &&
                                         <div className="col-2 text-center">
-                                          <NumberFormat value={this.state.unitDetails[index].productPrice * this.state.items[this.state.keysCart[index]]}
+                                          <NumberFormat value={this.state.unitDetails[index].productPrice * this.state.items[this.state.unitDetails[index].unitDetailId]}
                                                         displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
                                         </div>}
                                     <div className="col-1 text-center">

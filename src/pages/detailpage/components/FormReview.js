@@ -28,7 +28,7 @@ export default class FormReview extends Component {
     get("userProducts", params)
         .then(res => {
           if (res && res.status === 200 && res.data.length !== 0) {
-            // console.log("res.data.userProductId", res.data[0].userProductId, res.data.userProductId)
+            console.log("res.data.userProductId", res.data[0].userProductId, res.data.userProductId)
             this.setState({
               isReview: 1,
               point: res.data[0].point,
@@ -137,7 +137,7 @@ export default class FormReview extends Component {
     const user = AuthService.getCurrentUser();
     return (
         <>
-          {user && user.role === 'ROLE_USER' &&
+          {user && user.role === 'ROLE_USER' && this.state.userProductId !== -1 &&
               <div className="py-5 px-3">
                 <h5 className="detail-nav-link mb-4">ĐỂ LẠI BÌNH LUẬN CỦA BẠN</h5>
                 <form className="form" id="contact-form" method="post" onSubmit={(e) => this.handlePostReview(e)}>

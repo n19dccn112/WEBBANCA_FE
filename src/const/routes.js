@@ -11,6 +11,7 @@ import CheckOut from "../pages/cart/CheckOut";
 import Orders from "../pages/customer/Orders";
 import Order from "../pages/customer/Order";
 import IsLoveOrSeenPage from "../pages/productpage/IsLoveOrSeenPage";
+import LoginAdmin from "../pages/customer/LoginAdmin";
 
 export const routes = [
   {
@@ -71,6 +72,15 @@ export const routes = [
     path: '/customer',
     component: Customer,
     name: 'Khách hàng',
+    pub: false,
+    user: false,
+    admin: false,
+    sub: [],
+  },
+  {
+    path: '/admin',
+    component: LoginAdmin,
+    name: 'Quản trị viên',
     pub: false,
     user: false,
     admin: false,

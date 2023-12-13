@@ -600,10 +600,15 @@ class FormProduct extends Component {
                       this.state.dictUnitDetails[unitId].length : this.state.lengths[unitId]
                   paramUnitDetail['unitUnitPrice'] = 'vnđ'
                   // paramUnitDetail['unitDetailAmount'] = this.state.dictUnitDetails[unitId].unitDetailAmount
-
-                  post(`unitDetail`, paramUnitDetail)
+                  let unitDetail;
+                  this.state.unitDetails.map((value, index) => {
+                    if (value.unitId === unitId){
+                      unitDetail = value
+                    }
+                  })
+                  put(`unitDetail/${unitDetail.unitDetailId}`, paramUnitDetail)
                       .then(res => {
-                            if (res && res.status === 201) {
+                            if (res && res.status === 202) {
                               console.log("to unit thành công")
                               get('unitDetail/name', {"productId": this.state.id, "unitId": unitId})
                                   .then(res => {
@@ -806,7 +811,7 @@ class FormProduct extends Component {
         .then(res => {
           if (res !== undefined) {
             if (res.status === 200) {
-              let categories = this.state.categories
+              let categories = []
               categories.push(res.data)
               this.setState({
                 categories: categories,

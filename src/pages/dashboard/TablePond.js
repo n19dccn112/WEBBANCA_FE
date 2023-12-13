@@ -88,6 +88,8 @@ export default class TablePond extends Component {
         <>
           <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message} key={this.state.message}/>
 
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ KHO HÀNG</h1>
           <button className="add-button" key={`'Add'${this.props.id}`} onClick={() => this.props.addNewPond()}>
             <i className="fas fa-plus-circle"></i> THÊM MỚI
           </button>
@@ -96,6 +98,7 @@ export default class TablePond extends Component {
             <thead className="bg-light">
             <tr className="can-giua">
               <th className="py-4 text-uppercase text-sm">Loại kho #</th>
+              <th className="py-4 text-uppercase text-sm">Sản phẩm</th>
               <th className="py-4 text-uppercase text-sm">Số lượng</th>
               <th className="py-4 text-uppercase text-sm">Ngày nhập</th>
               <th className="py-4 text-uppercase text-sm">Giá hàng</th>

@@ -6,18 +6,29 @@ export default class Pond extends Component {
     super(props);
     this.state = {
       pond: [],
+      name: ''
     }
   }
   componentDidMount() {
     setTimeout(() => {
-      get('ponds', {"pondId": this.props.id})
-          .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
-                this.setState({
-                  pond: res.data
-                });
-              }
+      // console.log("11111111 this.props.unitDetailId: ", this.props.unitDetailId)
+      get(`unitDetail/${this.props.unitDetailId}`)
+          .then(res1 => {
+            if (res1 && res1.status === 200) {
+              // console.log("2222222222 unitDetail: ", res1.data)
+              get(`products/${res1.data.productId}`)
+                  .then(res2 => {
+                    if (res2 && res2.status === 200) {
+                      let name = res2.data.productName
+                      let size = res1.data.unitId === 1 ? 'S' : res1.data.unitId === 2 ? 'M' : 'L'
+                      console.log("3333333333 product: ", name + " " + size)
+                      setTimeout(() => {
+                        this.setState({
+                          name: name + " " + size,
+                        })
+                      }, 300)
+                    }
+                  })
             }
           })
     }, 500)
@@ -35,6 +46,7 @@ export default class Pond extends Component {
     return (
         <tr>
           <th className="py-4 align-middle"># {this.props.id}</th>
+          <td className="py-4 align-middle">{this.state.name}</td>
           <td className="py-4 align-middle">{this.props.pondAmount}</td>
           <td className="py-4 align-middle">{this.handleDate(this.props.inputDate)}</td>
           <td className="py-4 align-middle">{this.props.standardPrice} vnđ</td>

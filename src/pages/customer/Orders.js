@@ -200,7 +200,7 @@ export default class Orders extends Component {
                                 {order.orderStatusId === 1 &&
                                     <a className="delete-button" style={{marginLeft: "20px", color: "black"}}
                                        onClick={(e) => this.handleCancel(e, order.orderStatusId, order.orderId)}>
-                                      <i className="fas fa-trash"></i>
+                                      <i className="fa fa-ban"></i>
                                     </a>}
                               </td>
                             </tr>

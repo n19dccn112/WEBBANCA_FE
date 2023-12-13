@@ -3,6 +3,8 @@ import ProductList from '../../components/products/ProductList'
 import LeftBar from './LeftBar'
 import Modal from './Modal';
 import PageSlide from "../pageFoot/PageSlide";
+import SearchProductIds from "../../services/SearchProductIds";
+import {getPython} from "../../api/callAPI";
 
 export default class Shop extends Component {
   constructor(props) {
@@ -55,22 +57,22 @@ export default class Shop extends Component {
     this.buildPage()
   }
   componentDidMount() {
-    // if (SearchProductIds.getquery() !== "") {
-    //   let params = {};
-    //   params["query"] = SearchProductIds.getquery();
-    //   getPython(`search`, params)
-    //       .then(res => {
-    //         console.log("777777777 res.data: ", res.data)
-    //         if (Array.isArray(res.data)) {
-    //           console.log("res.data is a list.");
-    //         } else {
-    //           console.log("res.data is not a list.");
-    //         }
-    //         this.setState({
-    //           productIds: res.data,
-    //         })
-    //       });
-    // }
+    if (SearchProductIds.getquery() !== "") {
+      let params = {};
+      params["query"] = SearchProductIds.getquery();
+      getPython(`predictSearch`, params)
+          .then(res => {
+            // console.log("777777777 res.data: ", res.data)
+            // if (Array.isArray(res.data)) {
+            //   console.log("res.data is a list.");
+            // } else {
+            //   console.log("res.data is not a list.");
+            // }
+            this.setState({
+              productIds: res.data,
+            })
+          });
+    }
   }
   filterProductsByPrice(minPriceFilter, maxPriceFilter) {
     this.setState({

@@ -40,9 +40,16 @@ export default class Login extends Component {
     });
     this.form.validateAll();
     if (this.checkBtn.context._errors.length === 0) {
-      AuthService.login(this.state.username, this.state.password).then(
+      AuthService.loginUser(this.state.username, this.state.password).then(
           res => {
-            if (res) {
+            if (res === null) {
+              this.setState({
+                isShow: true,
+                type: 'danger',
+                message: 'Thông tin đăng nhập của bạn không chính xác'
+              });
+            }
+            else if (res) {
               this.setState({
                 isShow: true,
                 type: 'success',
@@ -80,33 +87,6 @@ export default class Login extends Component {
     }
   }
 
-  handleFinish1(){
-    let body = {};
-    body['username'] = '321';
-    body['address'] = '98'
-    body['phone'] = '0987654321'
-    body['password'] = '654321'
-    body['wardId'] = 10
-    body['districtId'] = 1
-    body['provinceId'] = 10
-    post('auth/register', body)
-        .then(res => {
-              if (res && res.status === 201) {
-                this.setState({
-                  message: `Đăng ký thành công`,
-                  type: 'success',
-                  isShow: true,
-                });
-              }
-              console.log(res);
-            },
-            err => {
-              err.response && this.setState({
-                message: `${err.response.data.error} ${err.response.data.message}`,
-                type: 'danger',
-              });
-            });
-  }
   render() {
     return (
         <>

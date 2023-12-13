@@ -211,6 +211,8 @@ class FormStatusFish extends Component {
     return (
         <><Message isShow={this.state.isShow} type={this.state.type} message={this.state.message}
                    key={this.state.message}/>
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ TRẠNG THÁI CÁ</h1>
           <div className="block mb-5">
             <div className="block-header">
               <strong className="text-uppercase">Sửa trạng thái cá</strong>

@@ -4,13 +4,26 @@ import authHeader from './authHeader';
 const AUTH_URL = process.env.REACT_APP_AUTH_URL;
 
 class AuthService {
-  login(username, password) {
+  loginUser(username, password) {
     return axios.post(AUTH_URL + "login", {username, password})
         .then(response => {
-          if (response.data.token) {
+          if (response.data.token && response.data.role === "ROLE_USER") {
             localStorage.setItem("user", JSON.stringify(response.data));
+            return response.data;
+          }else {
+            return null
           }
-          return response.data;
+        });
+  }
+  loginAdmin(username, password) {
+    return axios.post(AUTH_URL + "login", {username, password})
+        .then(response => {
+          if (response.data.token && response.data.role === "ROLE_SHOP") {
+            localStorage.setItem("user", JSON.stringify(response.data));
+            return response.data;
+          }else {
+            return null
+          }
         });
   }
   changePass(username, oldPassword, password) {

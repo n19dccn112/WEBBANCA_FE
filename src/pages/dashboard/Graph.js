@@ -262,6 +262,8 @@ export default class Graph extends Component {
     return (
         <div className="modal fade quickview" id="modalGrapBCDT" tabIndex="-1" role="dialog" aria-hidden="true">
           <div className="modal-dialog modal-lg" role="document">
+            <br/>
+            <h1 className="title text-center">QUẢN LÝ BÁO CÁO</h1>
             <div className="modal-content">
               <button className="close modal-close" type="button" data-bs-dismiss="modal" aria-label="Close"
               onClick={(e) => (this.props.closeModal(e))}/>

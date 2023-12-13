@@ -21,8 +21,17 @@ export default class TableOrder extends Component {
       maxNumber: 10,
       numberIndex: 1,
       pageComponent: [],
-      numberPage: 1
+      numberPage: 1,
+      selectStatusId: "1",
     }
+  }
+  handleOnChangeStatus(e){
+    let selectStatusId = e.target.value
+    setTimeout(() => {
+      this.setState({
+        selectStatusId: selectStatusId
+      })
+    }, 1000)
   }
   async doDelete(id) {
     console.log("000000000000000: " + id)
@@ -60,34 +69,23 @@ export default class TableOrder extends Component {
       });
     }, 2000);
   }
-  buildPage(){
-    let component = []
-    for (let i=1; i<=this.state.numberPage; i++){
-      component.push(
-          <li key={`SelectedOrder${i}`} className={`${this.state.numberIndex === i && 'active'} page-item`}>
-            <button className="page-link" onClick={() => this.handleNumberIndex(i)}>{i}</button></li>
-      )
-    }
-    setTimeout(() => {this.setState({pageComponent :component})}, 200)
-  }
-  handleNumberIndex(numberIndex){
-    this.setState({
-      minNumber: numberIndex * 10 - 10,
-      maxNumber: numberIndex * 10,
-    })
-    this.setState({numberIndex: numberIndex})
-    setTimeout(() => {this.buildPage()}, 500)
-  }
-
-  handleNumberPage(numberPage) {
-    this.setState({numberPage: numberPage})
-    this.buildPage()
-  }
   render() {
     return (
         <>
           <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message} key={this.state.message}/>
 
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ ĐƠN HÀNG</h1>
+          <div className="form-group col-3 mb-2" style={{marginLeft: "600px"}}>
+            <select className='form-select' value={this.state.selectStatusId}
+                    onChange={(e) => this.handleOnChangeStatus(e)}>
+              <option value={1}>CHỜ XÁC NHẬN</option>
+              <option value={2}>CHỜ LẤY HÀNG</option>
+              <option value={3}>CHỜ GIAO HÀNG</option>
+              <option value={4}>ĐÃ GIAO</option>
+              <option value={5}>ĐÃ HỦY</option>
+            </select>
+          </div>
           <table className="table table-borderless table-hover table-responsive-md">
             <thead className="bg-light">
             <tr>
@@ -101,13 +99,10 @@ export default class TableOrder extends Component {
             </thead>
             <tbody>
             <OrderList
-                minNumber={this.state.minNumber} maxNumber={this.state.maxNumber}
-                handleNumberPage={(numberPage) => this.handleNumberPage(numberPage)}
+                selectStatusId={this.state.selectStatusId}
                 isTable={true} deleteOrder={(id) => this.handleDelete(id)} key={this.state.key}/>
             </tbody>
           </table>
-          <PageSlide handleNumberIndex={(numberIndex) => this.handleNumberIndex(numberIndex)}
-                     numberIndex={this.state.numberIndex} numberPage={this.state.numberPage} pageComponent={this.state.pageComponent}/>
         </>
     )
   }

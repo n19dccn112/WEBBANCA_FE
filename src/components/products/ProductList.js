@@ -12,27 +12,29 @@ class ProductList extends Component {
       categoryTypeId: 0,
       productIds: [],
       update: false,
-      imageUrl: ""
+      imageUrl: "",
+      hasSearch: false
     }
   }
   componentDidMount() {
-    get('products')
-        .then(res => {
-          if (res !== undefined) {
-            // console.log("this.props.productIds: : ", res.data);
-            if (res.status === 200)
-              this.setState({
-                products: res.data
-              });
+    if (!this.state.hasSearch)
+      get('products')
+          .then(res => {
+            if (res !== undefined) {
+              // console.log("this.props.productIds: : ", res.data);
+              if (res.status === 200)
+                this.setState({
+                  products: res.data
+                });
 
-            if (this.props.handleNumberPage !== undefined)
-              if (this.props.pageName === 'TableProduct')
-                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
-              else if (this.props.pageName === 'Shop')
-                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/12))
-            console.log('this.props.pageName === Shop', this.props.pageName, this.props.pageName === 'Shop')
-          }
-        });
+              if (this.props.handleNumberPage !== undefined)
+                if (this.props.pageName === 'TableProduct')
+                  this.props.handleNumberPage(Math.round(Object.keys(res.data).length/9))
+                else if (this.props.pageName === 'Shop')
+                  this.props.handleNumberPage(Math.round(Object.keys(res.data).length/11))
+              console.log('this.props.pageName === Shop', this.props.pageName, this.props.pageName === 'Shop')
+            }
+          });
 
     setTimeout(() => {console.log("this.props.minNumber, this.props.maxNumber: ", this.props.minNumber, this.props.maxNumber)},500)
   }
@@ -77,14 +79,20 @@ componentDidUpdate(prevProps)
       params["categoryId"] = this.state.categoryId;
     if (this.state.productIds.length > 0)
       params["productIds"] = this.state.productIds.reduce((p, s) => `${p},${s}`);
-    get('products', params)
-        .then(res => {
-          if (res !== undefined)
-            if (res.status === 200)
-              this.setState({
-                products: res.data
-              });
-        });
+    // console.log("99999999999999999 params", params)
+    setTimeout(() => {
+      get('products', params)
+          .then(res => {
+            if (res !== undefined)
+              if (res.status === 200) {
+                this.setState({
+                  products: res.data,
+                  hasSearch: true
+                });
+                // console.log("000000000000000 products:", res.data)
+              }
+          });
+    }, 1000)
     this.setState({
       update: false,
     });
@@ -95,14 +103,15 @@ componentDidUpdate(prevProps)
 
   render() {
     let listProducts = this.state.products
+    console.log("listProducts 555555555555: ", listProducts)
     return (
         listProducts.map((product, index) => {
           // console.log("product.minPrice, product.maxPrice: ", product.minPrice, product.maxPrice)
           if ((index < this.props.maxNumber && index >= this.props.minNumber) &&
-              ((!this.props.isTable &&
+              (!this.props.isTable &&
                     ((this.props.minPriceFilter <= product.maxPrice && product.maxPrice <= this.props.maxPriceFilter) ||
                     (this.props.minPriceFilter <= product.minPrice && product.minPrice <= this.props.maxPriceFilter))
-              ) || this.props.isTable)){
+              ) || this.props.isTable){
           return (
               <Product
                   productId={product.productId}
@@ -125,7 +134,7 @@ componentDidUpdate(prevProps)
                   openModel={(id) => this.props.openModel(id)}
                   minPriceFilter={this.props.minPriceFilter}
                   maxPriceFilter={this.props.maxPriceFilter}
-                  // isDiscount={this.props.isDiscount}
+                  isDiscount={this.props.isDiscount}
                   isNew={this.props.isNew}
               />
           )}

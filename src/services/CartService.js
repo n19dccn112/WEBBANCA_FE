@@ -166,17 +166,17 @@ class CartService {
     // console.log("2: JSON.parse(localStorage.getItem('total')):: ", JSON.parse(localStorage.getItem('total')))
   }
   removeTotal(){
-    console.log("remove total 1: ", this.getTotalCart())
+    // console.log("remove total 1: ", this.getTotalCart())
     let number = JSON.parse(localStorage.getItem('total'))
     let numberNew = {}
     Object.keys(number).map((key, index) => {
-      console.log("111111111 remove total: ", typeof key, typeof AuthService.getCurrentUser().userId, key !== AuthService.getCurrentUser().userId.toString(), key, AuthService.getCurrentUser().userId )
+      // console.log("111111111 remove total: ", typeof key, typeof AuthService.getCurrentUser().userId, key !== AuthService.getCurrentUser().userId.toString(), key, AuthService.getCurrentUser().userId )
       if (key !== AuthService.getCurrentUser().userId.toString())
         numberNew[key] = Object.values(number)[index]
     })
     setTimeout(() => localStorage.setItem('total', JSON.stringify(numberNew)), 500);
-    setTimeout(() => console.log(localStorage.getItem('total')), 1000)
-    console.log("remove total 2: ", numberNew)
+    // setTimeout(() => console.log(localStorage.getItem('total')), 1000)
+    // console.log("remove total 2: ", numberNew)
   }
   getTotalCart(){
     return (this.getCurrentCart() !== null && this.getCurrentCart()[AuthService.getCurrentUser().userId] !== undefined) ?

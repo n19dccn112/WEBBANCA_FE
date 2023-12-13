@@ -61,11 +61,18 @@ class Header extends Component {
                   <div className="login-icons">
                     <i className="fa fa-user larger-icon"/>
                     <div>
-                      {this.curruser && (this.curruser.role === 'ROLE_USER' || this.curruser.role === 'ROLE_SHOP') &&
+                      {this.curruser && this.curruser.role === 'ROLE_USER' &&
                           <div className="login-links">
                           <a href="/customer"
                              onClick={(e) => this.logOut()}>{this.curruser.username}</a>
                           <a href="/profile">Hồ sơ</a>
+                          </div>
+                      }
+                      {this.curruser && this.curruser.role === 'ROLE_SHOP' &&
+                          <div className="login-links">
+                            <a href="/admin"
+                               onClick={(e) => this.logOut()}>{this.curruser.username}</a>
+                            <a href="/profile">Hồ sơ</a>
                           </div>
                       }
                       {!this.curruser &&

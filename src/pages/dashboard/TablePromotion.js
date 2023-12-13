@@ -69,6 +69,8 @@ export default class TablePromotion extends Component {
     return (
         <>
           <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message} key={this.state.message}/>
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ KHUYẾN MÃI</h1>
           <hr/>
           <table className="table table-borderless table-hover table-responsive-md">
             <thead className="bg-light">

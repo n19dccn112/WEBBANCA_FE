@@ -215,6 +215,8 @@ export default class ChartStatus extends Component {
     return (
         <>
           <Message isShow={this.state.isShow} type={this.state.type} message={this.state.message} key={this.state.message}/>
+          <br/>
+          <h1 className="title text-center">QUẢN LÝ BÁO CÁO</h1>
           <div className="block-header mt-2 mb-2">
             <strong className="text-uppercase">Báo cáo doanh thu</strong>
           </div>

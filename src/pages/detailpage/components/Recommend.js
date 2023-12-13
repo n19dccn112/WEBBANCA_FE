@@ -15,25 +15,26 @@ export default class Recommend extends Component {
     let params = {};
     params["productId"] = this.props.productId
     console.log(params)
-    getPython(`recommender`, params)
+    getPython(`predictKnn`, params)
         .then(res => {
           if (res && res.status === 200) {
             this.setState({
               recommenders: res.data
             })
+            console.log("predictKnn:", res.data)
           }
         })
   }
   render() {
-    var list = this.state.recommenders;
+    let list = this.state.recommenders;
     return (
         <section className="my-5">
           <div className="container">
             <header className="text-center">
             </header>
             <div className="row">
-              {list && list.map((productId, index) => (
-                  <RecommendItem productId={productId} key={index}/>
+              {list && list.map((value, index) => (
+                  <RecommendItem productId={value["productId"]} key={index}/>
               ))}
             </div>
           </div>

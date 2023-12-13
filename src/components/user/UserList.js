@@ -20,7 +20,7 @@ export default class UserList extends Component {
               });
 
               if (this.props.handleNumberPage !== undefined)
-                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
+                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/9))
             }
         });
   }

@@ -14,15 +14,16 @@ class FormPond extends Component {
     this.state = {
       pondId: 0,
       key: 0,
+
       standardPrice: 0,
       pondAmount: 0,
-      inputDate: '',
       priceShip: 0,
+      product: {},
+      unit: {},
+
       unitDetailId: 0,
       units: [],
       products: [],
-      product: {},
-      unit: {},
       unitDetail: {},
       type: 'success',
       isShow: false,
@@ -76,75 +77,84 @@ class FormPond extends Component {
   }
   async doCreate(e) {
     e.preventDefault();
-    let paramProduct = {}
-    paramProduct['productId'] = this.state.product.productId;
-    paramProduct['unitId'] = this.state.unit.unitId;
-    console.log("paramProduct ", paramProduct)
-    get('unitDetail', paramProduct)
-        .then(res => {
-          if (res !== undefined)
-            if (res.status === 200) {
-              this.setState({unitDetailId: res.data[0].unitDetailId})
-              console.log("unitDetailId: ", res.data, res.data[0].unitDetailId)
-            }
-        })
-    this.form.validateAll();
-    setTimeout(() => {
-      if (this.checkBtn.context._errors.length === 0) {
-        if ((this.state.standardPrice === 0 && this.state.standardPrice >= 1000) || this.state.pondAmount === 0 ||
-            (this.state.priceShip === 0 && this.state.priceShip >= 1000) || this.state.unitDetailId === 0){
+    if (this.state.standardPrice === 0 || this.state.pondAmount === 0
+    || this.state.product === {} || this.state.unit === {}) {
+      this.setState({
+        message: `Điền đầy đủ thông tin!`,
+        type: 'danger',
+        isShow: true
+      });
+    } else {
+      let paramProduct = {}
+      paramProduct['productId'] = this.state.product.productId;
+      paramProduct['unitId'] = this.state.unit.unitId;
+      console.log("paramProduct ", paramProduct)
+      get('unitDetail', paramProduct)
+          .then(res => {
+            if (res !== undefined)
+              if (res.status === 200) {
+                this.setState({unitDetailId: res.data[0].unitDetailId})
+                console.log("unitDetailId: ", res.data, res.data[0].unitDetailId)
+              }
+          })
+      this.form.validateAll();
+      setTimeout(() => {
+        if (this.checkBtn.context._errors.length === 0) {
+          if ((this.state.standardPrice === 0 && this.state.standardPrice >= 1000) || this.state.pondAmount === 0 ||
+              (this.state.priceShip === 0 && this.state.priceShip >= 1000) || this.state.unitDetailId === 0){
+            this.setState({
+              message: `Điền đầy đủ thông tin!`,
+              type: 'danger'
+            });
+            return
+          }
+          let params = {};
+          params['standardPrice'] = this.state.standardPrice;
+          params['pondAmount'] = this.state.pondAmount;
+          params['priceShip'] = this.state.priceShip
+          params['unitDetailId'] = this.state.unitDetailId
+
+          console.log("param: ", params)
+          if (this.props.match.params.id) {
+            put(`ponds/${this.props.match.params.id}`, params)
+                .then(res => {
+                      if (res && res.status === 202)
+                        this.setState({
+                          message: `Cập nhập kho thành công!`,
+                          type: 'success'
+                        });
+                      console.log(res);
+                    },
+                    err => {
+                      err.response && this.setState({
+                        message: `${err.response.data.error} ${err.response.data.message}`,
+                        type: 'danger',
+                      });
+                    })
+          } else {
+            post(`ponds`, params)
+                .then(res => {
+                      if (res && res.status === 201)
+                        this.setState({
+                          message: `Tạo kho thành công!`,
+                          type: 'success',
+                          isShow: true
+                        });
+                      console.log(res);
+                    },
+                    err => {
+                      err.response && this.setState({
+                        message: `${err.response.data.error} ${err.response.data.message}`,
+                        type: 'danger',
+                      });
+                    })
+          }
           this.setState({
-            message: `Điền đầy đủ thông tin!`,
-            type: 'danger'
-          });
-          return
+            isShow: !this.setState.isShow,
+          })
         }
-        let params = {};
-        params['standardPrice'] = this.state.standardPrice;
-        params['pondAmount'] = this.state.pondAmount;
-        params['priceShip'] = this.state.priceShip
-        params['unitDetailId'] = this.state.unitDetailId
-
-        console.log("param: ", params)
-        if (this.props.match.params.id) {
-          put(`ponds/${this.props.match.params.id}`, params)
-              .then(res => {
-                    if (res && res.status === 202)
-                      this.setState({
-                        message: `Cập nhập kho thành công!`,
-                        type: 'success'
-                      });
-                    console.log(res);
-                  },
-                  err => {
-                    err.response && this.setState({
-                      message: `${err.response.data.error} ${err.response.data.message}`,
-                      type: 'danger',
-                    });
-                  })
-        } else {
-          post(`ponds`, params)
-              .then(res => {
-                    if (res && res.status === 201)
-                      this.setState({
-                        message: `Tạo kho thành công!`,
-                        type: 'success'
-
-                      });
-                    console.log(res);
-                  },
-                  err => {
-                    err.response && this.setState({
-                      message: `${err.response.data.error} ${err.response.data.message}`,
-                      type: 'danger',
-                    });
-                  })
-        }
-        this.setState({
-          isShow: !this.setState.isShow,
-        })
-      }
-    }, 1000)
+      }, 1000)
+    }
   }
   handleOnChangeSize(e){
     this.setState({

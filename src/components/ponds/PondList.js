@@ -20,7 +20,7 @@ export default class PondList extends Component {
               });
 
               if (this.props.handleNumberPage !== undefined)
-                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
+                this.props.handleNumberPage(Math.round(Object.keys(res.data).length/9))
             }
         });
   }
@@ -37,6 +37,7 @@ export default class PondList extends Component {
                     inputDate={pond.inputDate}
                     priceShip={pond.priceShip}
                     deletePond={(id) => this.props.deletePond(id)}
+                    unitDetailId={pond.unitDetailId}
               />
           )
 

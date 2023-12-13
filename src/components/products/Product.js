@@ -173,9 +173,9 @@ class Product extends Component {
     const isWithin30Days = daysDiff <= 30;
 
       if (this.props.isDiscount === true && Object.keys(this.state.event).length === 0)
-        return (<div></div>);
+        return null
       if (this.props.isNew === true && !isWithin30Days)
-        return (<div></div>);
+        return null
       return (<div className="col-xl-4 col-6">
             <div className="product detail-background">
               <div className="product-image">

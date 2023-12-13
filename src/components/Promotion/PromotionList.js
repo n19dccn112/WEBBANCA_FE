@@ -18,7 +18,7 @@ export default class PromotionList extends Component {
             })
 
             if (this.props.handleNumberPage !== undefined)
-              this.props.handleNumberPage(Math.round(Object.keys(res.data).length/10))
+              this.props.handleNumberPage(Math.round(Object.keys(res.data).length/9))
             // console.log("predictPromotions", res.data)
           }
         })
