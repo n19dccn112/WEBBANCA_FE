@@ -28,7 +28,7 @@ class FormCustomer extends Component {
       checkFinish: false,
       isCheckedRole: false
     }
-    this.roles = ['Shop', 'User'];
+    this.roles = ['Shop', 'User', 'Ship'];
   }
   componentDidMount() {
     if (this.props.match.params.id) {
@@ -224,12 +224,12 @@ class FormCustomer extends Component {
                         {
                           this.roles.map((rl, index) =>
                                   (this.state.roleId === (index + 1) ?
-                                      <div key={index} className="col-sm-6">
+                                      <div key={index} className="col-sm-3">
                                         <input key={index} className="form-check-input me-2" name="role" id="role"
                                                defaultChecked value={rl} type="radio"/>
                                         <label className="form-check-label" htmlFor='role'>{rl}</label>
                                       </div> :
-                                      <div key={index} className="col-sm-6">
+                                      <div key={index} className="col-sm-3">
                                         <input key={index} className="form-check-input me-2" name="role" id="role"
                                                value={rl} type="radio"/>
                                         <label className="form-check-label" htmlFor='role'>{rl}</label>

@@ -64,10 +64,11 @@ componentDidUpdate(prevProps)
       get('products')
           .then(res => {
             if (res !== undefined)
-              if (res.status === 200)
+              if (res.status === 200) {
                 this.setState({
                   products: res.data
-                });
+                })
+              }
           });
     }
   }
@@ -89,6 +90,24 @@ componentDidUpdate(prevProps)
                   products: res.data,
                   hasSearch: true
                 });
+                console.log("this.state.productIds !== []", Object.values(this.state.productIds).length!==0, this.state.productIds)
+                let sort = {}
+                let dict = {}
+                res.data.map((product, index) => {
+                  dict[product.productId] = product;
+                })
+                console.log("dict:", dict, res.data)
+                // setTimeout(() => {
+                //   if (Object.values(this.state.productIds).length!==0) {
+                //     Object.values(dict).map((key, value) => {
+                //       sort = value;
+                //     })
+                //     setTimeout(() => {
+                //       this.setState({
+                //       products: sort,
+                //     });}, 500)
+                //   }
+                // }, 500)
                 // console.log("000000000000000 products:", res.data)
               }
           });
