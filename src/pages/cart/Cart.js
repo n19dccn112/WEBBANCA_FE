@@ -215,7 +215,7 @@ export default class Cart extends Component {
     // console.log("idAmounts: ", ids, amounts)
     setTimeout(() => {
       CartService.setShoppingSelect(ids, amounts)
-      CartService.setTotal(this.state.total  * 105/100 + 30000);
+      CartService.setTotal(this.state.total + (this.state.total*5/100) + 30000);
       console.log(CartService.getShoppingSelected())
     }, 1000)
 
@@ -223,15 +223,39 @@ export default class Cart extends Component {
   }
   handleMinus(id, remain) {
     const value = Number(this.state.items[id]) - 1;
-    this.setNewValueFirstRemove(id, remain, value);
+    this.loadPage ()
+    if (!this.state.soldEndOk[id])
+      this.setNewValueFirstRemove(id, remain, value);
+    else
+      this.setState({
+        message: `Vượt qua số lượng tồn kho`,
+        type: 'danger',
+        isShow: true,
+      });
   }
   async handleAdd(id, remain) {
     const value = Number(this.state.items[id]) + 1;
-    this.setNewValueFirstRemove(id, remain, value);
+    this.loadPage ()
+    if (!this.state.soldEndOk[id])
+      this.setNewValueFirstRemove(id, remain, value);
+    else
+      this.setState({
+        message: `Vượt qua số lượng tồn kho`,
+        type: 'danger',
+        isShow: true,
+      });
   }
   async handleNumberItem(e, productId, remain) {
     const value = Number(e.target.value);
-    this.setNewValueFirstRemove(productId, remain, value);
+    this.loadPage ()
+    if (!this.state.soldEndOk[productId])
+      this.setNewValueFirstRemove(productId, remain, value);
+    else
+      this.setState({
+        message: `Vượt qua số lượng tồn kho`,
+        type: 'danger',
+        isShow: true,
+      });
   }
   handleClickChecked(e, unitDetailId){
     let checked = this.state.checked
@@ -402,7 +426,7 @@ export default class Cart extends Component {
                             <li className="order-summary-item border-0">
                               <span>Total</span>
                               <strong className="order-summary-total">
-                                <NumberFormat value={this.state.total *105/100 + 30000} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
+                                <NumberFormat value={this.state.total + (this.state.total*5/100) + 30000} displayType={'text'} thousandSeparator={true} suffix=' vnđ'/>
                               </strong>
                             </li>
                           </ul>

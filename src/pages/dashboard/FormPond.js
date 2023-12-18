@@ -181,7 +181,11 @@ class FormPond extends Component {
                         }
                     });
               })
-              setTimeout(() => this.setState({units: units}), 500)
+              setTimeout(() =>
+              {
+                units.sort((a, b) => a.unitId - b.unitId);
+                this.setState({units: units})
+              }, 500)
             }
           }
         })

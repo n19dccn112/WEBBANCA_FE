@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Redirect} from 'react-router-dom';
-import {get, post} from '../../api/callAPI';
+import {get, post, put} from '../../api/callAPI';
 import AuthService from '../../services/AuthService';
 import CartService from '../../services/CartService';
 import NumberFormat from 'react-number-format';
@@ -247,12 +247,15 @@ export default class CheckOut extends Component {
                               });
                               CartService.removeUser()
                               CartService.removeTotal()
-
-                              setTimeout(() => (window.location.href = "/orders"), 3000)
                             })
                           }
                         })
                       })
+                      put(`orders/${ res.data.orderId}`,
+                          {
+                            'orderStatusId': 2,
+                          })
+                      setTimeout(() => (window.location.href = "/orders"), 3000)
                     }
                   })
             }

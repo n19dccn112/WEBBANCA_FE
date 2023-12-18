@@ -71,6 +71,12 @@ export default class ProductView extends Component {
         await this.setState({
           amountItem: value,
         })
+      else
+        this.setState({
+          message: `Vượt qua số lượng tồn kho`,
+          type: 'danger',
+          isShow: true,
+        });
     }
   }
   actionUpdateProduct (){
@@ -265,11 +271,25 @@ export default class ProductView extends Component {
       return;
     }
     // console.log("1111111111111111111 : " + this.props.productId + ": " + Number(this.state.amountItem))
-    CartService.add(this.state.unitDetailId, this.state.amountItem);
+
     const userId = AuthService.getCurrentUser().userId;
     let cart = null
     if (CartService.getCurrentCart() != null && userId)
       cart = CartService.getCurrentCart()[userId];
+    let amount = cart[this.state.unitDetailId]
+    console.log("11111111111 amount: ", amount, this.state.remainSelected  - amount <=0, this.state.remainSelected,
+        amount, !this.state.remainSelected)
+    if (this.state.remainSelected)
+      if (this.state.remainSelected  - amount <=0){
+        this.setState({
+          message: `Bạn đã thêm vào giở hàng tối đa sản phẩm`,
+          type: 'danger',
+          isShow: !this.setState.isShow,
+        });
+        return;
+      }
+
+    CartService.add(this.state.unitDetailId, this.state.amountItem);
     this.setState({
       message: `Thêm sản phẩm ${this.props.product.productName} vào giỏ hàng!`,
       type: 'success',

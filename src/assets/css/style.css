@@ -15414,7 +15414,7 @@ textarea.form-control-lg {
 }
 
 .detail-quantity {
-    max-width: 5rem;
+    max-width: 100px !important;
     text-align: center
 }
 
@@ -15739,7 +15739,7 @@ textarea.form-control-lg {
 }
 
 .input-items {
-    min-width: 40px
+    min-width: 60px
 }
 
 @media (max-width: 991.98px) {

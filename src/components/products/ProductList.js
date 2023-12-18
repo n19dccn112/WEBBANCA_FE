@@ -90,13 +90,13 @@ componentDidUpdate(prevProps)
                   products: res.data,
                   hasSearch: true
                 });
-                console.log("this.state.productIds !== []", Object.values(this.state.productIds).length!==0, this.state.productIds)
-                let sort = {}
-                let dict = {}
-                res.data.map((product, index) => {
-                  dict[product.productId] = product;
-                })
-                console.log("dict:", dict, res.data)
+                // console.log("this.state.productIds !== []", Object.values(this.state.productIds).length!==0, this.state.productIds)
+                // let sort = {}
+                // let dict = {}
+                // res.data.map((product, index) => {
+                //   dict[product.productId] = product;
+                // })
+                // console.log("dict:", dict, res.data)
                 // setTimeout(() => {
                 //   if (Object.values(this.state.productIds).length!==0) {
                 //     Object.values(dict).map((key, value) => {

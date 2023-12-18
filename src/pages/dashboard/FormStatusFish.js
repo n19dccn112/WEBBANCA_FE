@@ -43,6 +43,25 @@ class FormStatusFish extends Component {
     let amount = [0, 0, 0]
     this.setState({statusFishAmount: amount})
   }
+  putStatus(statusFishDetailId, params){
+    put(`statusFishDetail/${statusFishDetailId}`, params)
+        .then(res => {
+              if (res && res.status === 202)
+                this.setState({
+                  message: `Cập nhập trạng thái cá thành công!`,
+                  type: 'success',
+                  isShow: true
+                });
+              console.log(res);
+            },
+            err => {
+              err.response && this.setState({
+                message: `${err.response.data.error} ${err.response.data.message}`,
+                type: 'danger',
+                isShow: true
+              });
+            })
+  }
   async doCreate(e) {
     e.preventDefault();
 
@@ -57,36 +76,52 @@ class FormStatusFish extends Component {
     }
 
     this.statusFishName.map((value, index) => {
+      console.log(index, "statusFishName: ", value)
       let params = {};
       params['statusFishId'] = index + 1;
       params['unitDetailId'] = this.state.unitDetail.unitDetailId
 
       get('statusFishDetail', params)
           .then(res => {
-            if (res !== undefined) {
-              if (res.status === 200) {
+            if (res !== undefined && res.status === 200) {
+              if (Object.keys(res.data).length !== 0) {
+                console.log(index, " thành công 6666: ", res.data)
                 params['amount'] = this.state.statusFishAmount[index]
-                console.log("param: ", params)
-                put(`statusFishDetail/${res.data[0].statusFishDetailId}`, params)
+                console.log(index, "statusFishDetail param: ", params, res.data)
+                if (this.state.statusFishAmount[index] !== 0){
+                  this.putStatus(res.data[0].statusFishDetailId, params)
+                  this.setState({
+                    isShow: !this.setState.isShow,
+                  })
+                }
+              }else {
+                post('statusFishDetail', params)
                     .then(res => {
-                          if (res && res.status === 202)
-                            this.setState({
-                              message: `Cập nhập trạng thái cá thành công!`,
-                              type: 'success',
-                              isShow: true
-                            });
-                          console.log(res);
+                          if (res && res.status === 201){
+                            console.log("post statusFishDetail: ", params)
+                            get('statusFishDetail', params)
+                                .then(res => {
+                                  if (res !== undefined && res.status === 200) {
+                                    if (Object.keys(res.data).length !== 0) {
+                                      params['amount'] = this.state.statusFishAmount[index]
+                                      console.log(" statusFishDetail param: ", params, res.data)
+                                      if (this.state.statusFishAmount[index] !== 0){
+                                        this.putStatus(res.data[0].statusFishDetailId, params)
+                                        this.setState({
+                                          isShow: !this.setState.isShow,
+                                        })
+                                      }
+                                    }
+                                  }
+                                });
+                          }
                         },
                         err => {
                           err.response && this.setState({
                             message: `${err.response.data.error} ${err.response.data.message}`,
                             type: 'danger',
-                            isShow: true
                           });
                         })
-                this.setState({
-                  isShow: !this.setState.isShow,
-                })
               }
             }
           });
@@ -148,7 +183,11 @@ class FormStatusFish extends Component {
                         }
                     });
               })
-              setTimeout(() => this.setState({units: units}), 500)
+              setTimeout(() =>
+              {
+                units.sort((a, b) => a.unitId - b.unitId);
+                this.setState({units: units})
+              }, 500)
             }
           }
         })
